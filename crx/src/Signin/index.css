@@ -1,0 +1,8 @@
+.sign-in .or-with {
+    text-align: center;
+}
+
+.sign-in .providers {
+    display: flex;
+    justify-content: center;
+}

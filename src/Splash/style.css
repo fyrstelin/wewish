@@ -1,0 +1,28 @@
+.splash {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+    top: 0; bottom: 0;
+    right: 0; left: 0;
+    background: url('/splash.jpg');
+    background-size: cover;
+    background-position: center right;
+    color: white;
+}
+
+.splash>h1 {
+    text-align: center;
+    font-size: 10vh;
+    padding-bottom: 20vh;
+}
+
+.splash>footer {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    font-size: 12pt;
+    padding: 0.5em;
+}

@@ -1,0 +1,71 @@
+.help {
+    font-family: "Gochi Hand", cursive;
+    color: #bf392c;
+    position: absolute;
+    height: 100px;
+    width: 100px;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.help > label {
+    position: absolute;
+    font-size: 20pt;
+    text-transform: none;
+}
+
+.help.fab {
+    right: 100%;
+    bottom: 20%;
+    background-Image: url(./fab.png);
+}
+
+.help.fab > label {
+    bottom: 100%;
+    right: -24px;
+    width: 300%;
+    max-Width: 90vw;
+    text-align: right;
+}
+
+.help.bottom {
+    background-image: url('./bottom.png');
+    top: calc(100% + 8px);
+    left: 80px;
+}
+
+.help.bottom>label {
+    left: -48px;
+    right: -48px;
+    top: 100%;
+    max-width: 50vw;
+    text-align: center;
+}
+
+.help.list-action { 
+    background-image: url('./list-action.png');
+    top: -5px;
+    right: 100%;
+}
+
+.help.list-action>label {
+    width: 300%;
+    max-width: 60vw;
+    text-align: right;
+    right: 0;
+}
+
+.help.menu-button {
+    background-image: url('./menu-button.png');
+    top: calc(100% - 30px);
+    right: 16px;
+}
+
+.help.menu-button>label {
+    right: 50px;
+    bottom: calc(100% - 62px);
+    width: 300%;
+    max-width: 80vw;
+    text-align: right;
+}

@@ -1,0 +1,12 @@
+UI
+
+UX
+
+Features
+- Wishlist
+    - Sortering/filtering
+- Hent fødselsdag fra fb
+- Slet mange ønsker
+- Mere synligt input felt
+- Server rendering
+- Title/OG atributer

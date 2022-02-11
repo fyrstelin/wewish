@@ -1,0 +1,16 @@
+@media screen {
+    html {
+        touch-action: manipulation;
+    }
+
+    body {
+        -webkit-user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+    }
+}
+
+ion-label:not([text-wrap])>h2 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
