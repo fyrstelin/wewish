@@ -1,0 +1,7 @@
+.image-upload > div {
+    background-image: url('./no-image.svg')
+}
+
+.image-upload input {
+    display: none;
+}

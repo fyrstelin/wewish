@@ -1,0 +1,89 @@
+@media screen {
+    .printable {
+        display: none
+    }
+}
+
+@media print {
+    body {
+        height: initial !important;
+        width: initial !important;
+        position: initial !important;
+        max-width: initial !important;
+        max-height: initial !important;
+        overflow: initial !important;
+        margin: initial !important;
+        padding: initial !important;
+    }
+
+    body > :not(.printable){
+        display: none;
+    }
+}
+
+@page {
+    size: A4;
+    margin: 10mm 15mm;
+}
+  
+.printable {
+    font-family: roboto, arial, sans-serif;
+    background: white;
+}
+
+.printable header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    text-align: right;
+}
+
+.printable main {
+    margin: 10mm 0;
+}
+
+.printable footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: right;
+}
+
+.printable h1 {
+    font-size: 26pt;
+    text-align: center;
+    margin: 0;
+    font-weight: normal;
+}
+
+.printable h2 {
+    font-size: 15pt;
+    text-align: center;
+    color: #666;
+    margin: 0 0 8pt;
+    font-weight: normal;
+}
+
+.printable h3 {
+    font-size: 16pt;
+    font-weight: bold;
+    margin: 12pt 0 0;
+}
+
+.printable ul {
+    margin: 0;
+}
+
+.printable li {
+    margin: 0.5em 0;
+}
+
+.printable article {
+    break-inside: avoid-page;
+}
+
+.printable p {
+    white-space: pre;
+}

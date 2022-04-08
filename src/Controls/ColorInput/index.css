@@ -1,0 +1,28 @@
+.color-input {
+    display: inline-block;
+    margin: 0 8px;
+}
+
+.color-input .button {
+    display: inline-block;    
+    height: 20px;
+    width: 20px;
+    cursor: pointer;
+}
+
+.color-input .button.primary {
+    background: var(--ion-color-primary);
+}
+
+.color-input .button.secondary {
+    background: var(--ion-color-secondary);
+}
+
+.color-input__color-picker .swatches-picker {
+    width: auto !important;
+    height: auto !important;
+}
+
+.color-input__color-picker .swatches-picker>div>div>div {
+    height: auto !important;
+}

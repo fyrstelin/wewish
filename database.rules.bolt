@@ -1,0 +1,151 @@
+/* USERS */
+
+type User {
+    name: String | Null
+    birthday: String | Null
+    lang: String | Null
+    isAdmin: Boolean | Null
+    wishlists: Map<String, Boolean | String>
+    pushEnabled: Boolean | Null
+    skills: Boolean[]
+}
+
+path /users/{uid} is User {
+    read() { auth != null && uid == auth.uid }
+    write() { auth != null && uid == auth.uid }
+}
+
+path /users/{uid}/name {
+    read() { true }
+}
+
+path /users {
+    index() { ['isAdmin'] }
+}
+
+/* WISHLISTS */
+type Wishlist {
+    title: String | Null
+    description: String | Null
+    members: String[]
+    wishes: Boolean[]
+    access: String | Null
+    themeColor: String | Null
+    secondaryThemeColor: String | Null
+}
+
+path /wishlists/{id} is Wishlist {
+    read() { 
+        this.access == null ||
+        this.access == 'public' ||
+        this.members[auth.uid] == 'owner' ||
+        this.access == 'private' && this.members[auth.uid] == 'guest'
+    }
+    write() {
+        prior(this) == null ||
+        prior(this).members[auth.uid] == 'owner'
+    }
+}
+
+path /wishlists/{id}/title {
+    read() { true }
+}
+
+path /wishlists/{id}/access {
+    read() { true }
+}
+
+path /wishlists/{id}/members {
+    read() { true }
+}
+
+path /wishlists/{id}/themeColor {
+    read() { true }
+}
+
+path /wishlists/{id}/secondaryThemeColor {
+    read() { true }
+}
+
+path /wishlists/{id}/description {
+    read() { true }
+}
+
+type Wish {
+    name: String
+    category: String | Null
+    url: String | Null
+    wishlistId: String
+    price: Number | Null
+    amount: Number | String | Null
+    image: String | Null
+    thumbnail: String | Null
+    description: String | Null
+}
+
+path /wishes/{id} is Wish {
+    read() { true }
+    write() {
+        prior(this) == null ||
+        prior(root).wishlists[prior(this).wishlistId].members[auth.uid] == 'owner'
+    }
+}
+
+path /bought-wishes/{id} {
+    read() { 
+        root.wishlists[root.wishes[id].wishlistId].members[auth.uid] != 'owner'
+    }
+}
+
+path /bought-wishes/{id}/{uid} is Number {
+    write() {
+        auth.uid == uid &&
+        root.wishlists[root.wishes[id].wishlistId].members[auth.uid] != 'owner'
+    }
+}
+
+path /invites/{inviteId} is String {
+    read() { auth != null }
+    create() {
+        root.wishlists[this].members[auth.uid] == 'owner'
+    }
+}
+
+type AccessRequest {
+    requester: String
+    wishlistId: String
+}
+
+path /requests {
+    read() { true }
+    index() {
+        ['requester', 'wishlistId']
+    }
+}
+
+path /requests/{requestId} is AccessRequest {
+    create() {
+        this.requester == auth.uid
+    }
+    delete() {
+        prior(root).wishlists[prior(this).wishlistId].members[auth.uid] == 'owner'
+    }
+}
+
+type PushTokenDetatils {
+    userId: String
+}
+
+path /fcm-tokens/{token} is PushTokenDetatils {
+    create() {
+        this.userId == auth.uid
+    }
+    update() {
+        this.userId == auth.uid
+    }
+    delete() { true }
+}
+
+path /fcm-tokens {
+    index() { ['userId'] }
+}
