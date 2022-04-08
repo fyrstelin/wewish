@@ -2,13 +2,14 @@ import './index.css';
 import './theme.css';
 import './printable.css';
 import '@ionic/core/css/ionic.bundle.css';
-
+import 'pwacompat'
 import * as ReactDOM from 'react-dom';
 import { Root } from './Root';
 
 import { setupIonicReact } from '@ionic/react'
 
-import registerServiceWorker from './registerServiceWorker';
+import { register } from './serviceWorkerRegistration';
+import { connectable, Observable, shareReplay } from 'rxjs';
 
 const userAgent = navigator.userAgent.toLowerCase()
 
@@ -21,8 +22,21 @@ if (userAgent.includes('fb_iab')) {
   }
 }
 
+const updates = connectable(new Observable<string>(s => {
+  register({
+    onSuccess: () => s.next('SW_INSTALLED'),
+    onUpdate: () => s.next('NEW_CONTENT')
+  });
+}).pipe(
+  shareReplay({
+    refCount: true,
+    windowTime: 100
+  })
+))
+
 ReactDOM.render(
-  <Root />,
+  <Root updates={updates} />,
   document.getElementById('root')
 )
-registerServiceWorker();
+
+updates.connect()

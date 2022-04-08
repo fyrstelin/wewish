@@ -3,8 +3,9 @@ import * as Firebase from './Firebase/App';
 
 import { App } from './App';
 import { IonApp } from '@ionic/react';
+import { Observable } from 'rxjs';
 
-export const Root: FC = () => (
+export const Root: FC<{ updates: Observable<string> }> = ({ updates }) => (
   <Firebase.App
     apiKey='AIzaSyBS8xeJ-azSfr6PStW-TD3I0aOGCc651Zk'
     authDomain='wewish.app'
@@ -16,7 +17,7 @@ export const Root: FC = () => (
     appId='1:607064698105:web:5dbd24190ab323a89a8628'
   >
     <IonApp>
-      <App />
+      <App updates={updates} />
     </IonApp>
   </Firebase.App>
 )
