@@ -1,6 +1,6 @@
 import { useState as useReactState, useEffect, useCallback } from 'react'
 import { combineLatest, Observable } from 'rxjs';
-import { switchMap, map } from "rxjs/operators";
+import { switchMap, map, throttleTime } from "rxjs/operators";
 import * as Api from '../Api';
 import { useListen } from "../Firebase/Database";
 
@@ -12,6 +12,10 @@ const useRxState = <TState>(createStream: () => Observable<TState>, deps: any[])
 
   useEffect(() => {
     const subscription = createStream()
+      .pipe(throttleTime(50, undefined, {
+        leading: false,
+        trailing: true
+      }))
       .subscribe(setState)
     return () => subscription.unsubscribe()
   }, [createStream])

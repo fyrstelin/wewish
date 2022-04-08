@@ -1,5 +1,5 @@
-import { Observable, BehaviorSubject, Subscription, asyncScheduler } from 'rxjs';
-import { map, distinctUntilChanged, observeOn } from 'rxjs/operators'
+import { Observable, BehaviorSubject, Subscription } from 'rxjs';
+import { map, distinctUntilChanged, throttleTime } from 'rxjs/operators'
 import { ref, getDatabase, onValue } from 'firebase/database';
 import { cache } from './Database'
 import { PureComponent, ReactNode } from 'react';
@@ -18,7 +18,10 @@ export abstract class FirebaseComponent<TProps, TState = {}> extends PureCompone
 
     this.subscription.add(this
       .setup()
-      .pipe(observeOn(asyncScheduler))
+      .pipe(throttleTime(100, undefined, {
+        leading: false,
+        trailing: true
+      }))
       .subscribe(state => {
         this.setState(state)
       }));

@@ -3,7 +3,7 @@ import { Localize, defaultLang } from './index';
 import { FirebaseProvider, useAuth } from '../Firebase';
 import { switchMap, map } from 'rxjs/operators'
 import { of } from 'rxjs';
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 
 type Props = {
   uid: string | null
@@ -13,6 +13,10 @@ type State = {
 };
 
 class Provider extends FirebaseProvider<Props, State> {
+  protected fallback(): ReactNode {
+    return <></>
+  }
+
   setup() {
     return this.on(props => props.uid)
       .pipe(switchMap(uid => uid

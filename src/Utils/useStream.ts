@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs'
+import { Observable, throttleTime } from 'rxjs'
 import { useState, useEffect } from 'react'
 
 export const useStream = <T>(stream: Observable<T>) => {
@@ -6,7 +6,12 @@ export const useStream = <T>(stream: Observable<T>) => {
 
   useEffect(() => {
     setState(undefined)
-    const s = stream.subscribe(setState)
+    const s = stream
+      .pipe(throttleTime(50, undefined, {
+        leading: false,
+        trailing: true
+      }))
+      .subscribe(setState)
     return () => s.unsubscribe()
   }, [stream])
 
