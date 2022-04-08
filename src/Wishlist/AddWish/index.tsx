@@ -1,10 +1,10 @@
-import React from 'react';
 import { WithTranslation } from '../../Localization';
 import { Teaches } from '../../Skills';
 import { Help } from '../../Controls/Help';
 import { IonInput, IonList, IonItem, IonLabel, IonLoading } from '@ionic/react';
 import { InputChangeEventDetail } from '@ionic/core';
 import './index.css';
+import { KeyboardEvent, PureComponent } from 'react';
 
 
 export type WishData = {
@@ -30,7 +30,7 @@ type State = {
 }
 
 type SuggestionProps = { children: string, onClick: (suggestion: string) => void };
-class Suggestion extends React.PureComponent<SuggestionProps> {
+class Suggestion extends PureComponent<SuggestionProps> {
   private click = () => {
     this.props.onClick(this.props.children);
   };
@@ -44,11 +44,11 @@ class Suggestion extends React.PureComponent<SuggestionProps> {
   }
 }
 
-const isUrl = (x: string) => x.startsWith('https://') || x.startsWith('http://')
+const isUrl = (x: string) => x.startsWith('https://') || x.startsWith('http://')
 
 export const AddWish =
   WithTranslation(
-    class AddWish extends React.PureComponent<
+    class AddWish extends PureComponent<
       Props &
       WithTranslation,
       State> {
@@ -64,7 +64,7 @@ export const AddWish =
       private changeCategory = (e: CustomEvent<InputChangeEventDetail>) =>
         this.setState({ category: e.detail.value || '' })
 
-      private completeCategory = (e: React.KeyboardEvent) => {
+      private completeCategory = (e: KeyboardEvent) => {
         if (e.key === 'Enter' && this.wishInp) {
           this.wishInp.setFocus();
         }
@@ -73,7 +73,7 @@ export const AddWish =
       private changeWish = (e: CustomEvent<InputChangeEventDetail>) =>
         this.setState({ wish: e.detail.value || '' })
 
-      private completeWish = async (e: React.KeyboardEvent) => {
+      private completeWish = async (e: KeyboardEvent) => {
         if (e.key === 'Enter') {
           const { onAddWish } = this.props;
           const { wish, category } = this.state;

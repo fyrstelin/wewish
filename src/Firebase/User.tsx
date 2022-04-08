@@ -1,19 +1,19 @@
-import React from 'react';
-import * as Firebase from 'firebase/app';
+import { User as AuthUser } from 'firebase/auth'
+import { PureComponent, ReactNode } from 'react';
 import { Subscription } from 'rxjs';
 import { WithAuth } from './Auth';
 
-export type FirebaseUser = Firebase.User | null;
+export type FirebaseUser = AuthUser | null;
 
 type Props = {
-  children: (user: FirebaseUser) => React.ReactNode
+  children: (user: FirebaseUser) => ReactNode
 }
 
 type State = {
   user: FirebaseUser
 };
 
-export const User = WithAuth(class User extends React.PureComponent<Props & WithAuth, State> {
+export const User = WithAuth(class User extends PureComponent<Props & WithAuth, State> {
   state = {
     user: null
   };

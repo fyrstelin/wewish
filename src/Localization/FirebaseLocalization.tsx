@@ -1,9 +1,9 @@
 import * as Localization from './index';
 import { Localize, defaultLang } from './index';
-import React from 'react';
 import { FirebaseProvider, useAuth } from '../Firebase';
 import { switchMap, map } from 'rxjs/operators'
 import { of } from 'rxjs';
+import { FC } from 'react';
 
 type Props = {
   uid: string | null
@@ -26,12 +26,12 @@ class Provider extends FirebaseProvider<Props, State> {
   }
 }
 
-export const FirebaseLocalization = ({ children }: React.Props<{}>) => {
+export const FirebaseLocalization: FC = ({ children }) => {
   const { currentUser } = useAuth()
 
-  return <Provider uid={currentUser && currentUser.uid} render={({ lang }) =>
+  return <Provider uid={currentUser && currentUser.uid} render={({ lang }) =>
     <Localize lang={lang}>
       {children}
     </Localize>
-  }/>
+  } />
 }

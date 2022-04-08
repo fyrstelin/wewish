@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Page as StdPage } from '../Page';
 import * as Models from './Models';
 import { SimpleMenuButton } from '../Utils/SimpleMenuButton';
@@ -32,7 +32,7 @@ type Props = {
 
 const useStringInput = (value: string | undefined) => {
   const [state, setState] = useState(StringInput.Initialize(value))
-  
+
   const flush = useCallback(() => setState(StringInput.Flush(state)), [state])
 
   useEffect(() => setState(StringInput.Update(state, value)), [value, state])
@@ -46,7 +46,7 @@ const useStringInput = (value: string | undefined) => {
 
 export const Page = ({ id, wishlist, onDelete, onSave, onReset, onRemoveMember, onAddCoOwner }: Props) => {
   const popupManager = usePopupManager()
-  const { wishlistSettings, userSettings } = useTranslation()
+  const { wishlistSettings, userSettings } = useTranslation()
   const { user } = useUser()
 
   const [title, setTitle, flushTitle] = useStringInput(wishlist.title)

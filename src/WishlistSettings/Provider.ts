@@ -1,12 +1,13 @@
-import React, { useEffect, useCallback } from 'react'
+import { useState as useReactState, useEffect, useCallback } from 'react'
 import { combineLatest, Observable } from 'rxjs';
 import { switchMap, map } from "rxjs/operators";
 import * as Api from '../Api';
 import { useListen } from "../Firebase/Database";
 
 const useRxState = <TState>(createStream: () => Observable<TState>, deps: any[]) => {
-  const [state, setState] = React.useState<TState | null>(null)
+  const [state, setState] = useReactState<TState | null>(null)
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   createStream = useCallback(createStream, deps)
 
   useEffect(() => {

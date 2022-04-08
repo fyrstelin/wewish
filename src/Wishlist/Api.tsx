@@ -1,5 +1,6 @@
-import * as Firebase from 'firebase/app';
-import React, { createContext, FC, useMemo, useContext } from 'react';
+import { equalTo, get, onValue, orderByChild, query, ref, update } from 'firebase/database';
+import { ref as storageRef, uploadBytes } from 'firebase/storage'
+import { createContext, FC, useMemo, useContext } from 'react';
 import { useStorage, useDatabase, useAuth, useFunction } from '../Firebase';
 import { Id, Patch } from '../Utils';
 
@@ -78,7 +79,7 @@ const Context = createContext<Api>(EmptyApi);
 
 export const useApi = () => useContext(Context)
 
-export const Api: FC<{ wishlistId: string }> = ({
+export const ApiProvider: FC<{ wishlistId: string }> = ({
   wishlistId,
   children
 }) => {
@@ -88,29 +89,30 @@ export const Api: FC<{ wishlistId: string }> = ({
   const addWishFn = useFunction('addWish')
 
   const api = useMemo<Api>(() => {
-    const handleAccessRequest = async (update: Dictionary, uid: string) => {
-      const ref = await db
-        .ref(`/requests`)
-        .orderByChild('wishlistId').equalTo(wishlistId)
-        .once('value');
+    const handleAccessRequest = async (input: Dictionary, uid: string) => {
+      const r = await get(
+        query(ref(db, `/requests`),
+          orderByChild('wishlistId'),
+          equalTo(wishlistId)
+        ))
 
-      const requests = (ref.val() || {}) as Dictionary<{ requester: string }>;
+      const requests = (r.val() || {}) as Dictionary<{ requester: string }>;
 
       const patch = Object.entries(requests)
         .filter(([, req]) => req.requester === uid)
         .reduce((acc, [id]) => ({
           ...acc,
           [`/requests/${id}`]: null
-        }), update);
+        }), input);
 
-      await db.ref().update(patch);
+      await update(ref(db), patch);
     }
 
     return ({
       addWish: async (name: string, category: null | string, amount: number | 'unlimited') => {
         const userId = auth.currentUser!.uid;
         const wishId = Id();
-        await db.ref().update({
+        await update(ref(db), {
           [`wishlists/${wishlistId}/wishes/${wishId}`]: true,
           [`wishes/${wishId}`]: {
             name, category, amount,
@@ -128,56 +130,55 @@ export const Api: FC<{ wishlistId: string }> = ({
       },
 
       deleteWish: async (wishId: string) => {
-        await db.ref().update({
+        await update(ref(db), {
           [`/wishlists/${wishlistId}/wishes/${wishId}`]: null
         });
       },
 
-      updateWish: async (wishId: string, update: WishUpdate) => {
-        await db.ref().update(Patch({
-          [`wishes/${wishId}/name`]: update.name,
-          [`wishes/${wishId}/category`]: update.category,
-          [`wishes/${wishId}/url`]: update.url,
-          [`wishes/${wishId}/price`]: update.price,
-          [`wishes/${wishId}/amount`]: update.amount,
-          [`wishes/${wishId}/description`]: update.description
+      updateWish: async (wishId: string, input: WishUpdate) => {
+        await update(ref(db), Patch({
+          [`wishes/${wishId}/name`]: input.name,
+          [`wishes/${wishId}/category`]: input.category,
+          [`wishes/${wishId}/url`]: input.url,
+          [`wishes/${wishId}/price`]: input.price,
+          [`wishes/${wishId}/amount`]: input.amount,
+          [`wishes/${wishId}/description`]: input.description
         }));
       },
 
       uploadImage: async (wishId: string, image: Blob) => {
-        const imageRef = db.ref(`/wishes/${wishId}/image`);
-        const currentImage = (await imageRef.once('value')).val();
+        const imageRef = ref(db);
+        const currentImage = (await get(imageRef)).val();
         const path = `/uploads/${Id(32)}`;
-        const storageRef = storage.ref(path);
-        await storageRef.put(image, {
+        const r = storageRef(storage, path);
+        await uploadBytes(r, image, {
           contentType: image.type,
           customMetadata: {
             'wish-id': wishId
           }
         });
 
-        await new Promise(r => {
-          const cb = (s: Firebase.database.DataSnapshot | null) => {
+        await new Promise<void>(r => {
+          const off = onValue(imageRef, s => {
             if (s && s.val() !== currentImage) {
-              imageRef.off('value', cb);
+              off()
               r();
             }
-          }
-
-          imageRef.on('value', cb);
+          })
         });
       },
 
       unstar: async () => {
         const userId = auth.currentUser!.uid;
-        db.ref().update({
+
+        update(ref(db), {
           [`/users/${userId}/wishlists/${wishlistId}`]: null
         });
       },
 
       star: async () => {
         const userId = auth.currentUser!.uid;
-        db.ref().update({
+        update(ref(db), {
           [`/users/${userId}/skills/star`]: true,
           [`/users/${userId}/wishlists/${wishlistId}`]: true
         });
@@ -185,7 +186,7 @@ export const Api: FC<{ wishlistId: string }> = ({
 
       markAsBought: async (wishId: string, amount: number) => {
         const userId = auth.currentUser!.uid;
-        db.ref().update({
+        update(ref(db), {
           [`/users/${userId}/skills/mark-as-bought`]: true,
           [`/bought-wishes/${wishId}/${userId}`]: amount
         });
@@ -193,27 +194,27 @@ export const Api: FC<{ wishlistId: string }> = ({
 
       markAsUnbought: async (wishId: string) => {
         const userId = auth.currentUser!.uid;
-        db.ref().update({
+        update(ref(db), {
           [`/bought-wishes/${wishId}/${userId}`]: null
         });
       },
 
       shared: async () => {
         const userId = auth.currentUser!.uid;
-        db.ref().update({
+        update(ref(db), {
           [`/users/${userId}/skills/share-wish-list`]: true
         });
       },
 
       updateDescription: async (description: string) => {
-        db.ref().update({
+        update(ref(db), {
           [`/wishlists/${wishlistId}/description`]: description
         })
       },
 
       requestAccess: async () => {
         const id = Id();
-        db.ref().update({
+        update(ref(db), {
           [`requests/${id}`]: {
             requester: auth.currentUser!.uid,
             wishlistId

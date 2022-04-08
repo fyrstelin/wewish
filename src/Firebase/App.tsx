@@ -1,5 +1,5 @@
-import React, { useContext } from 'react';
-import Firebase from 'firebase/app';
+import { FC, useContext, useMemo, createContext } from 'react';
+import { initializeApp, FirebaseApp } from 'firebase/app';
 import 'firebase/messaging';
 import 'firebase/analytics'
 import 'firebase/performance'
@@ -15,26 +15,18 @@ type Props = {
   appId: string
 };
 
-export const Context = React.createContext<Firebase.app.App>(null as any);
+export const Context = createContext<FirebaseApp>(null as any);
 export const { Consumer, Provider } = Context
 
-export class App extends React.PureComponent<Props> {
-  app: Firebase.app.App;
+export const App: FC<Props> = ({
+  children,
+  ...props
+}) => {
+  const app = useMemo(() => initializeApp(props), [props])
 
-  constructor(props: Props) {
-    super(props);
-    this.app = Firebase.initializeApp(props);
-  }
-
-  UNSAFE_componentWillReceiveProps() {
-    throw new Error('Cannot change props for Firebase.App');
-  }
-
-  render() {
-    return <Provider value={this.app}>
-      {this.props.children}
-    </Provider>;
-  }
+  return <Provider value={app}>
+    {children}
+  </Provider>;
 }
 
 export const useApp = () => useContext(Context)

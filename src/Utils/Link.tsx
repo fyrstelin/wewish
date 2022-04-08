@@ -1,15 +1,15 @@
-import React from 'react';
-import * as ReactRouterDom from 'react-router-dom';
+import { PureComponent } from "react";
+import { LinkProps, Link as L } from "react-router-dom";
 
-type Props = ReactRouterDom.LinkProps & {
+type Props = LinkProps & {
   href: string
 };
 
-export class Link extends React.PureComponent<Props> {
+export class Link extends PureComponent<Props> {
   render() {
-    const { to, ...props} = this.props
-    return <ReactRouterDom.Link to={to || this.props.href} {...props}>
+    const { to, ...props } = this.props
+    return <L to={to || this.props.href} {...props}>
       {this.props.children}
-    </ReactRouterDom.Link>;
+    </L>;
   }
 }

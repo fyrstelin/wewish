@@ -1,16 +1,16 @@
 import { FirebaseComponent } from './FirebaseComponent';
-import { never } from 'rxjs';
+import { NEVER } from 'rxjs';
 
 export abstract class FirebaseProcess<Props> extends FirebaseComponent<Props> {
-    UNSAFE_componentWillReceiveProps(nextProps: Props) {
-        this.stream.next(nextProps);
-    }
+  UNSAFE_componentWillReceiveProps(nextProps: Props) {
+    this.stream.next(nextProps);
+  }
 
-    setup() {
-        return never();
-    }
+  setup() {
+    return NEVER;
+  }
 
-    render() { 
-        return null; 
-    }
+  render() {
+    return null;
+  }
 }

@@ -1,31 +1,12 @@
-import React from 'react';
 import * as App from './App';
-import Firebase from 'firebase/app';
-import 'firebase/messaging';
+import { Messaging, getMessaging } from 'firebase/messaging';
+import { ComponentType, ReactNode } from 'react';
 
-type ReactProps = { children?: React.ReactNode };
+type ReactProps = { children?: ReactNode };
 
-const fakeMessaging: Firebase.messaging.Messaging = {
-    deleteToken: async () => false,
-    getToken: async () => '',
-    onMessage: () => () => {},
-    onTokenRefresh: () => () => {},
-    requestPermission: async () => {},
-    setBackgroundMessageHandler: () => {},
-    useServiceWorker: () => {},
-    usePublicVapidKey: () => {},
-    onBackgroundMessage: () => () => {} 
-}
-
-export type WithMessaging = { messaging: Firebase.messaging.Messaging };
-export function WithMessaging<TProps>(Component: React.ComponentType<TProps & WithMessaging>) {
-    if (Firebase.messaging.isSupported()) {
-        return (props: ReactProps & TProps) => <App.Consumer>{app => 
-            <Component messaging={app.messaging()} {...props}/>
-        }</App.Consumer>
-    } else {
-        return (props: ReactProps & TProps) => <App.Consumer>{app => 
-            <Component messaging={fakeMessaging} {...props}/>
-        }</App.Consumer>
-    }
+export type WithMessaging = { messaging: Messaging };
+export function WithMessaging<TProps>(Component: ComponentType<TProps & WithMessaging>) {
+  return (props: ReactProps & TProps) => <App.Consumer>{app =>
+    <Component messaging={getMessaging(app)} {...props} />
+  }</App.Consumer>
 }

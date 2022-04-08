@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Page } from '../Page';
 import { Section } from './Section';
 import { Title, P } from './Typographies';

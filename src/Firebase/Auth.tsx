@@ -1,17 +1,16 @@
-import React from 'react';
 import * as App from './App';
-import Firebase from 'firebase/app';
-import 'firebase/auth';
+import { Auth, getAuth } from 'firebase/auth';
+import { ComponentType, ReactNode } from 'react';
 
 type ReactProps = {
-  children?: React.ReactNode
+  children?: ReactNode
 }
 
-export type WithAuth = { auth: Firebase.auth.Auth };
-export function WithAuth<TProps>(Component: React.ComponentType<TProps & WithAuth>) {
+export type WithAuth = { auth: Auth };
+export function WithAuth<TProps>(Component: ComponentType<TProps & WithAuth>) {
   return (props: ReactProps & TProps) => <App.Consumer>{app =>
-    <Component auth={app.auth()} {...props} />
+    <Component auth={getAuth(app)} {...props} />
   }</App.Consumer>
 }
 
-export const useAuth = () => App.useApp().auth()
+export const useAuth = () => getAuth(App.useApp())

@@ -1,36 +1,37 @@
-import React, { useState, useEffect, createContext, FC, useMemo, useContext } from 'react';
+import { useState, useEffect, createContext, FC, useMemo, useContext, ComponentType, ReactNode } from 'react';
 import { User, Provider } from '.';
 import * as Firebase from '../Firebase';
 import { Login } from './Login';
 import { useToaster } from '../Controls/Toaster';
+import { User as FirebaseUser } from 'firebase/auth'
 
 type Task = {
   callback: () => void
 }
 
 const Context = createContext<{
-  user: null | User
+  user: null | User
   getUser: (message?: string) => Promise<User>
 }>({
   user: null,
   getUser: () => Promise.reject('Not implemented')
 })
-const newUser = (user: firebase.User | null) => user
-    ? {
-      id: user.uid,
-      email: user.email || undefined,
-      providers: user.providerData
-        .filter(x => !!x)
-        .map(x => x!.providerId as Provider)
-    }
-    : null
+const newUser = (user: FirebaseUser | null) => user
+  ? {
+    id: user.uid,
+    email: user.email || undefined,
+    providers: user.providerData
+      .filter(x => !!x)
+      .map(x => x!.providerId as Provider)
+  }
+  : null
 
 
-export const UserProvider: FC = ({children}) => {
+export const UserProvider: FC = ({ children }) => {
   const auth = Firebase.useAuth()
   const toaster = useToaster()
-    
-  const [user, setUser] = useState<User | null>(newUser(auth.currentUser))
+
+  const [user, setUser] = useState<User | null>(newUser(auth.currentUser))
 
   const [task, setTask] = useState<Task>()
 
@@ -72,7 +73,7 @@ export const UserProvider: FC = ({children}) => {
 
 export type WithUser = { user: User | null, getUser: (message?: string) => Promise<User> };
 export function WithUser(login?: true) {
-  return function WithUser<Props>(Component: React.ComponentType<Props & WithUser>) {
+  return function WithUser<Props>(Component: ComponentType<Props & WithUser>) {
     return (props: Props) =>
       <OldUserprovider login={login}>{(user, getUser) =>
         <Component user={user} getUser={getUser} {...props} />
@@ -82,9 +83,9 @@ export function WithUser(login?: true) {
 
 const OldUserprovider: FC<{
   login?: true,
-  children: (user: User | null, getUser: () => Promise<User>) => React.ReactNode
-}> = ({ login, children}) => {
-  const { user, getUser} = useUser(login)
+  children: (user: User | null, getUser: () => Promise<User>) => ReactNode
+}> = ({ login, children }) => {
+  const { user, getUser } = useUser(login)
   return <>{children(user, getUser)}</>
 }
 

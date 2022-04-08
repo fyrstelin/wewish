@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Wishlists } from './Wishlists';
 import { Page } from '../Page';
 import { Fab } from '../Controls/Fab';
@@ -16,7 +16,7 @@ type Props = {
 export const Home: FC<Props> = ({ home }) => {
   const translation = useTranslation()
   const api = useApi()
-  
+
   const addWishlist = async () => {
     api.addWishlist(translation.home['wish-list']);
   }

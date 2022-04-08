@@ -1,26 +1,26 @@
-import React from 'react';
 import { WithAuth } from './Auth';
 import { timer, Observable, combineLatest } from 'rxjs';
 import { first } from 'rxjs/operators';
+import { ReactElement, useEffect, useState } from 'react';
 
 type Props = {
-    delay?: number
-    children: (initialized: boolean) => React.ReactElement<any>
+  delay?: number
+  children: (initialized: boolean) => ReactElement
 }
 
-export const Initializer = WithAuth(({ delay, auth, children}: Props & WithAuth) => {
-    const [isInitialized, setIsInitialized] = React.useState(false);
-    
-    React.useEffect(() => {
-        const delayStream = timer(delay || 0);
-        const authStream = new Observable<any>(s => {
-            auth.onAuthStateChanged(() => s.next());
-        });
+export const Initializer = WithAuth(({ delay, auth, children }: Props & WithAuth) => {
+  const [isInitialized, setIsInitialized] = useState(false);
 
-        combineLatest(delayStream, authStream)
-            .pipe(first())
-            .subscribe(() => setIsInitialized(true));
+  useEffect(() => {
+    const delayStream = timer(delay || 0);
+    const authStream = new Observable<any>(s => {
+      auth.onAuthStateChanged(() => s.next());
     });
 
-    return children(isInitialized);
+    combineLatest([delayStream, authStream])
+      .pipe(first())
+      .subscribe(() => setIsInitialized(true));
+  });
+
+  return children(isInitialized);
 });

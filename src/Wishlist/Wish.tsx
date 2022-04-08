@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect } from 'react';
+import { FC, useState, useEffect, VFC } from 'react';
 import * as Models from './Models';
 import { IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonContent, IonList, IonItem, IonLabel, IonInput, IonCheckbox } from '@ionic/react';
 import { useTranslation } from '../Localization';
@@ -40,32 +40,29 @@ type WishState = {
   description: StringInput.Model
 }
 
-type PriceLabel = { children: 1 | 2 | 3 };
-const PriceLabel = ({ children }: PriceLabel) => <IonButtons slot='end'>
-  <IonIcon icon={logoEuro} color={children > 0 ? 'dark' : 'medium'} />
-  <IonIcon icon={logoEuro} color={children > 1 ? 'dark' : 'medium'} />
-  <IonIcon icon={logoEuro} color={children > 2 ? 'dark' : 'medium'} />
-</IonButtons>;
+const PriceLabel: FC<{ children: 1 | 2 | 3 }> = ({ children }) => (
+  <IonButtons slot='end'>
+    <IonIcon icon={logoEuro} color={children > 0 ? 'dark' : 'medium'} />
+    <IonIcon icon={logoEuro} color={children > 1 ? 'dark' : 'medium'} />
+    <IonIcon icon={logoEuro} color={children > 2 ? 'dark' : 'medium'} />
+  </IonButtons>
+);
 
-type Item = {
-  children: React.ReactNode
-  label: string
-};
-const Item = ({ children, label }: Item) =>
-  children ? <IonItem>
+const Item: FC<{ label: string }> = ({ children, label }) => children
+  ? <IonItem>
     <IonLabel position='stacked' color='medium'>{label}</IonLabel>
     {typeof children === 'string'
       ? <IonInput readonly value={children} />
       : children
     }
-  </IonItem> : <></>
+  </IonItem>
+  : <></>
 
-type AmountSelector = {
+const AmountSelector: VFC<{
   max: number
   amount: number
   onChange: (amount: number) => void
-};
-const AmountSelector = ({ max, amount, onChange }: AmountSelector) => {
+}> = ({ max, amount, onChange }) => {
 
   const desc = () => onChange(amount - 1);
   const inc = () => onChange(amount + 1);

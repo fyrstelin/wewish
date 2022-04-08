@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import { createContext, useState, useEffect, useContext, ReactNode, ComponentType } from 'react';
 
 export type Lang = 'en' | 'da';
 
@@ -14,7 +14,7 @@ const Context = createContext<Translation>(null as any)
 
 type Props = {
   lang: Lang
-  children: React.ReactNode
+  children: ReactNode
 }
 
 export const Localize = ({ children, lang }: Props) => {
@@ -44,7 +44,7 @@ export const Localize = ({ children, lang }: Props) => {
 }
 
 export type WithTranslation = { translation: Translation };
-export function WithTranslation<TProps>(Component: React.ComponentType<TProps & WithTranslation>) {
+export function WithTranslation<TProps>(Component: ComponentType<TProps & WithTranslation>) {
   return (props: TProps) => <Context.Consumer>{translation =>
     <Component translation={translation} {...props} />
   }</Context.Consumer>

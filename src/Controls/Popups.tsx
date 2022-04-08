@@ -1,4 +1,4 @@
-import React, { createContext, useState, useRef, useCallback, useContext } from 'react';
+import { createContext, useState, useRef, useCallback, useContext, FC } from 'react';
 import { useTranslation } from '../Localization';
 import { IonAlert } from '@ionic/react';
 
@@ -25,8 +25,8 @@ const Context = createContext<Manager>(null as any)
 
 export const usePopupManager = () => useContext(Context)
 
-export const Popups = ({ children }: React.Props<{}>) => {
-  const [task, setTask] = useState<Task | null>(null)
+export const Popups: FC = ({ children }) => {
+  const [task, setTask] = useState<Task | null>(null)
   const { controls } = useTranslation()
 
   const handleClose = useCallback(() => {
@@ -54,7 +54,7 @@ export const Popups = ({ children }: React.Props<{}>) => {
       })
     )
   })
-  
+
   return <Context.Provider value={manager}>
     <IonAlert
       isOpen={!!task}

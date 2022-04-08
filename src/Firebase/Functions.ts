@@ -1,8 +1,6 @@
-import { useCallback } from 'react';
-import * as App from './App';
-import 'firebase/functions';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 
 export const useFunction = (name: string) => {
-  const functions = App.useApp().functions()
-  return useCallback(functions.httpsCallable(name), [name, functions])
+  const functions = getFunctions()
+  return httpsCallable(functions, name)
 }

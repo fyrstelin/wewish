@@ -1,5 +1,5 @@
-import React, { FC } from 'react';
-import {  QueryInvite } from './Provider';
+import { FC } from 'react';
+import { QueryInvite } from './Provider';
 import { Page } from '../Page';
 import { useTranslation } from '../Localization';
 import { useHistory } from '../Utils/History';

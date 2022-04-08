@@ -1,11 +1,11 @@
-import React from 'react';
-import { Consumer } from '../Utils/History';
+import history from '../Utils/History';
 import { Page } from '../Page';
 import { FirebaseComponent } from './FirebaseComponent';
 import { IonProgressBar } from '@ionic/react';
+import { ReactNode } from 'react';
 
 type Props<TState> = {
-  render: (state: TState) => React.ReactNode
+  render: (state: TState) => ReactNode
 }
 
 const states: { [key: string]: any } = {};
@@ -25,7 +25,7 @@ export abstract class FirebaseProvider<TProps, TState> extends FirebaseComponent
     states[this.key || ''] = this.state;
   }
 
-  protected fallback(): React.ReactNode {
+  protected fallback(): ReactNode {
     return (
       <Page>
         <IonProgressBar type='indeterminate' color='secondary' />
@@ -34,13 +34,9 @@ export abstract class FirebaseProvider<TProps, TState> extends FirebaseComponent
   }
 
   render() {
-    return (
-      <Consumer>{history => {
-        this.key = history.location.key;
-        return this.state
-          ? this.props.render(this.state)
-          : this.fallback()
-      }}</Consumer>
-    );
+    this.key = history.location.key;
+    return this.state
+      ? this.props.render(this.state)
+      : this.fallback()
   }
 }

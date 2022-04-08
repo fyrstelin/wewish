@@ -1,10 +1,10 @@
-import React, { FC, useEffect } from 'react';
+import { FC, useEffect } from 'react';
 import * as Home from './Home';
 import { Splash } from './Splash';
 import * as Firebase from './Firebase';
-import { Route, Router, Switch } from 'react-router-dom';
+import { Route, unstable_HistoryRouter as Router, Routes, useParams } from 'react-router-dom';
 import * as Wishlist from './Wishlist';
-import { useHistory } from './Utils/History';
+import history from './Utils/History';
 import * as UserSettings from './UserSettings';
 import { WishlistSettings } from './WishlistSettings';
 import { Policy } from './Legal/Policy';
@@ -41,16 +41,32 @@ const ServiceWorkerMessages: FC<{
     }))
 
     return () => s.unsubscribe()
-  }, [ toaster, translation])
+  }, [toaster, translation])
 
   return null
 }
 
-export const App = () => {
-  const history = useHistory()
+const Wrappers = {
+  Wishlist: () => {
+    const { id, wishId } = useParams<'id' | 'wishId'>()
+    return <Wishlist.Root
+      id={id!}
+      wishId={wishId}
+    />
+  },
+  WishlistSettings: () => {
+    const { id } = useParams<'id'>()
+    return <WishlistSettings id={id!} />
+  },
+  Invite: () => {
+    const { code } = useParams<'code'>()
+    return <Invite code={code!}/>
+  }
+}
 
+export const App = () => {
   return (
-    <Firebase.Initializer delay={400}>{isInitialized => {
+    <Firebase.Initializer delay={500}>{isInitialized => {
       if (!isInitialized) {
         return <Splash />
       }
@@ -60,35 +76,24 @@ export const App = () => {
             <Toaster>
               <Skills>
                 <Hash>
-                    <ServiceWorkerMessages />
-                    <SyncFcmTokenProcess />
-                    <Router history={history}>
-                      <UserProvider>
-                        <Switch>
-                          <Route exact path='/'
-                            render={_ => <Home.Root />} />
-                          <Route exact path='/wishlists/:id/settings'
-                            render={x => <WishlistSettings id={x.match.params.id} />} />
-                          <Route exact path='/wishlists/:id/:wishId?'
-                            render={x => <Wishlist.Root
-                              id={x.match.params.id}
-                              wishId={x.match.params.wishId}
-                            />} />
-                          <Route exact path='/user-settings'
-                            render={_ => <UserSettings.Root />} />
-                          <Route exact path='/policy'
-                            render={_ => <Policy />} />
-                          <Route exact path='/terms'
-                            render={_ => <Terms />} />
-                          <Route exact path='/about'
-                            render={_ => <About />} />
-                          <Route exact path='/invites/:code'
-                            render={x => <Invite code={x.match.params.code} />} />
-                          <Route
-                            render={x => 'Not found'} />
-                        </Switch>
-                      </UserProvider>
-                    </Router>
+                  <ServiceWorkerMessages />
+                  <SyncFcmTokenProcess />
+                  <Router history={history}>
+                    <UserProvider>
+                      <Routes>
+                        <Route path='/' element={<Home.Root />} />
+                        <Route path='/wishlists/:id/settings' element={<Wrappers.WishlistSettings />} />
+                        <Route path='/wishlists/:id' element={<Wrappers.Wishlist />}/>
+                        <Route path='/wishlists/:id/:wishId' element={<Wrappers.Wishlist />}/>
+                        <Route path='/user-settings' element={<UserSettings.Root />} />
+                        <Route path='/policy' element={<Policy />} />
+                        <Route path='/terms' element={<Terms />} />
+                        <Route path='/about' element={<About />} />
+                        <Route path='/invites/:code' element={<Wrappers.Invite />} />
+                        <Route path='*' element='Not found' />
+                      </Routes>
+                    </UserProvider>
+                  </Router>
                 </Hash>
               </Skills>
             </Toaster>

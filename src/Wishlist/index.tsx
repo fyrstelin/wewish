@@ -1,5 +1,4 @@
-import React from 'react';
-import { Api } from "./Api";
+import { ApiProvider } from "./Api";
 import { Process } from './Process';
 import { QueryWishlist } from './Provider';
 import { Wishlist } from './Wishlist';
@@ -13,13 +12,13 @@ export const Root = ({ id, wishId }: Props) => {
   const wishlist = useStream(QueryWishlist(id))
 
   return wishlist
-    ? <Api wishlistId={id}>
-        <Process wishlistId={id} />
-        <Wishlist
-          wishlist={wishlist}
-          openWishId={wishId}
-        />
-    </Api>
+    ? <ApiProvider wishlistId={id}>
+      <Process wishlistId={id} />
+      <Wishlist
+        wishlist={wishlist}
+        openWishId={wishId}
+      />
+    </ApiProvider>
     : <Page parent='/'>
       <IonList>
         <Divider />
@@ -40,4 +39,3 @@ export const Root = ({ id, wishId }: Props) => {
       </IonList>
     </Page>
 }
-  

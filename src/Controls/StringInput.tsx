@@ -1,6 +1,5 @@
-import React, { useCallback, memo } from 'react';
+import { memo } from 'react';
 import { IonInput, IonLabel, IonTextarea } from '@ionic/react';
-import { InputChangeEventDetail } from '@ionic/core';
 
 export type Model = {
   value: string | undefined,
@@ -11,7 +10,7 @@ export const Initialize = (backingValue: string | undefined): Model => ({
   value: undefined
 });
 export const Update = (model: Model, backingValue: string | undefined): Model =>
-  model.backingValue === (backingValue || '')
+  model.backingValue === (backingValue || '')
     ? model
     : ({
       ...model,
@@ -26,7 +25,7 @@ export const Flush = (model: Model): Model => model.value === undefined
   });
 
 export const Value = (model: Model) => (model.value === undefined ? undefined : model.value.trim());
-export const Values = <T, P = null>(models: { [key in keyof T]: Model }): { [key in keyof T]?: string } =>
+export const Values = <T extends any>(models: { [key in keyof T]: Model }): { [key in keyof T]?: string } =>
   Object.keys(models)
     .map(x => x as keyof T)
     .reduce((data, key) => models[key].value === undefined
@@ -45,10 +44,6 @@ type Props = {
 };
 
 export const StringInput = memo(({ model, label, placeholder, type, onBlur, onChange }: Props) => {
-  const change = useCallback((e: CustomEvent<InputChangeEventDetail>) =>
-    onChange({ ...model, value: e.detail.value === null ? undefined : e.detail.value }),
-    [model, onChange])
-
   return (
     <>
       <IonLabel position='floating' color='medium'>{label}</IonLabel>
@@ -56,14 +51,14 @@ export const StringInput = memo(({ model, label, placeholder, type, onBlur, onCh
         ? <IonTextarea
           onBlur={onBlur}
           value={model.value === undefined ? model.backingValue || '' : model.value}
-          onIonChange={change}
+          onIonChange={e => onChange({ ...model, value: e.detail.value === null ? undefined : e.detail.value })}
           placeholder={placeholder}
         />
         : <IonInput
           onBlur={onBlur}
           type={type}
           value={model.value === undefined ? model.backingValue || '' : model.value}
-          onIonChange={change}
+          onIonChange={e => onChange({ ...model, value: e.detail.value === null ? undefined : e.detail.value })}
           placeholder={placeholder}
         />
       }

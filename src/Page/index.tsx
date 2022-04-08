@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC, ReactNode } from 'react';
 import { Header } from './Header';
 import { Title } from '../Controls/Portals/Title';
 import { IonContent } from '@ionic/react';
@@ -6,9 +6,9 @@ import cx from 'classnames';
 
 type Props = {
   title?: string
-  headerContent?: React.ReactNode
+  headerContent?: ReactNode
   parent?: string
-  buttons?: React.ReactNode
+  buttons?: ReactNode
   classNames?: string
 };
 

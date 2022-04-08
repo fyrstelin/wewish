@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { WishItem } from './WishItem';
 import * as Models from './Models';
 import { IonItemGroup, IonItemDivider, IonLabel, IonButton, IonIcon } from '@ionic/react';

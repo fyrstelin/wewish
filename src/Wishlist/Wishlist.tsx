@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import { Page } from '../Page';
 import { Wishes } from './Wishes';
 import { useUser } from '../User/UserProvider';
@@ -13,12 +13,12 @@ import * as Models from './Models';
 import { Skill, Requires } from '../Skills';
 import { Description } from './Description';
 import { Wish, WishUpdate } from './Wish';
-import { useHistory } from '../Utils/History';
+import history from '../Utils/History';
 import { Error } from '../Controls/Error';
 import { IonButton, IonAlert } from '@ionic/react';
 import { AccessRequests } from './AccessRequests';
 import cx from 'classnames';
-import { mailUnread, settings, heart, heartEmpty, share as shareIcon } from 'ionicons/icons';
+import { mailUnread, settings, heart, heartOutline, share as shareIcon } from 'ionicons/icons';
 import { useApi } from './Api';
 
 type Props = {
@@ -29,12 +29,11 @@ type Props = {
 export const Wishlist: FC<Props> = ({
   wishlist, openWishId
 }) => {
-  const {user, getUser} = useUser()
+  const { user, getUser } = useUser()
   const translation = useTranslation()
   const wishlistTranslation = translation.wishlist
   const api = useApi()
   const share = useShare()
-  const history = useHistory()
 
   const [isAccessRequestsOpen, setIsAccessRequestsOpen] = useState(false)
 
@@ -182,7 +181,7 @@ export const Wishlist: FC<Props> = ({
                 onClick={unstar}
               />
               : <SimpleMenuButton
-                icon={heartEmpty}
+                icon={heartOutline}
                 teaches='star'
                 onClick={star}
               />

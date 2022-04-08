@@ -1,16 +1,18 @@
 import './index.css';
 import './theme.css';
 import './printable.css';
-import '@ionic/core/css/core.css';
 import '@ionic/core/css/ionic.bundle.css';
 
-import React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Root } from './Root';
+
+import { setupIonicReact } from '@ionic/react'
 
 import registerServiceWorker from './registerServiceWorker';
 
 const userAgent = navigator.userAgent.toLowerCase()
+
+setupIonicReact({})
 
 if (userAgent.includes('fb_iab')) {
   if (userAgent.includes('android')) {

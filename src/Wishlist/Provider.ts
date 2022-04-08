@@ -7,12 +7,13 @@ import { leftJoin } from "../rxjs/operators/leftJoin";
 import { useUser } from "../User/UserProvider";
 import * as Api from '../Api';
 import { useListen, useDatabase } from '../Firebase/Database';
+import { equalTo, onValue, orderByChild, query, ref } from 'firebase/database';
 
 export const QueryWishlist = (wishlistId: string): Observable<Wishlist> => {
   const listen = useListen()
   const uid = useUser().user?.id
   const database = useDatabase()
-  
+
   return useMemo(() => {
     const field = <T>(path: string, defaultTo?: T) =>
       listen<T>(`/wishlists/${wishlistId}/${path}`).pipe(
@@ -32,25 +33,25 @@ export const QueryWishlist = (wishlistId: string): Observable<Wishlist> => {
           : access)
       ) : access
 
-  const accessRequested = uid
+    const accessRequested = uid
       ? new Observable<boolean>(stream => {
-        const query = database
-          .ref(`/requests`)
-          .orderByChild('requester').equalTo(uid)
-        query.on('value', snapshot => {
+        const q = query(ref(database),
+          orderByChild('requester'),
+          equalTo(uid)
+        )
+
+        stream.next(false)
+
+        return onValue(q, snapshot => {
           const res = (snapshot.val()) as Dictionary<Api.AccessRequest>;
 
           stream.next(Object.values(res || {})
             .some(x => x.wishlistId === wishlistId))
           stream.next(res && Object.keys(res).length > 0);
         });
-
-        stream.next(false)
-
-        return () => query.off('value');
       })
       : of(false)
-    
+
     const owners = field<Dictionary<Api.Member>>('members')
       .pipe(
         map(members => Object
@@ -67,27 +68,28 @@ export const QueryWishlist = (wishlistId: string): Observable<Wishlist> => {
     const themeColor = field<string>('themeColor');
     const secondaryThemeColor = field<string>('secondaryThemeColor');
 
-    const base = combineLatest(title, themeColor, secondaryThemeColor, description, owners,
+    const base = combineLatest([title, themeColor, secondaryThemeColor, description, owners],
       (title, themeColor, secondaryThemeColor, description, owners) => ({
         title, themeColor, secondaryThemeColor, description, owners
       }))
 
     const accessRequests = new Observable<string[]>(s => {
-        const query = database.ref('/requests')
-          .orderByChild('wishlistId').equalTo(wishlistId);
-        query.on('value', snapshot => {
-          const res = snapshot.val() as Dictionary<Api.AccessRequest>;
-          s.next(Object.values(res || {}).map(x => x.requester));
-        });
-        s.next([])
-        return () => query.off('value');
-      }
+      const q = query(ref(database),
+        orderByChild('wishlistId'),
+        equalTo(wishlistId)
+      )
+      s.next([])
+      return onValue(q, snapshot => {
+        const res = snapshot.val() as Dictionary<Api.AccessRequest>;
+        s.next(Object.values(res || {}).map(x => x.requester));
+      })
+    }
     ).pipe(
       leftJoin(id => listen<string>(`/users/${id}/name`).pipe(
         map(name => ({
           id, name
         })
-      )))
+        )))
     )
 
     const ownedWishes = field<Dictionary>('wishes', {}).pipe(
@@ -151,7 +153,7 @@ export const QueryWishlist = (wishlistId: string): Observable<Wishlist> => {
         map(x => x === true)
       )
       : of(false)
-    
+
 
     const res = $type.pipe(
       switchMap($type => {
@@ -168,8 +170,8 @@ export const QueryWishlist = (wishlistId: string): Observable<Wishlist> => {
           case 'private':
             return combineLatest(title, accessRequested,
               (title, accessRequested) => ({
-              id: wishlistId,
-              $type, title, accessRequested
+                id: wishlistId,
+                $type, title, accessRequested
               }));
           case 'public':
             return combineLatest(base, publicWishes, stared,

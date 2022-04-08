@@ -1,34 +1,30 @@
-import React from 'react';
+import { FC, MouseEvent } from 'react';
 import { IonItem } from '@ionic/react';
-import { withRouter, RouteComponentProps } from 'react-router'; 
+import { useNavigate } from 'react-router';
 
 type Props = {
-    href?: string
-    class?: string
-    onClick?: (e: React.MouseEvent) => void
-    button?: true
-    detail?: boolean
+  href?: string
+  class?: string
+  onClick?: (e: MouseEvent) => void
+  button?: true
+  detail?: boolean
 }
 
-export const Item = withRouter(
-    class Item extends React.PureComponent<Props & RouteComponentProps> {
+export const Item: FC<Props> = (props) => {
+  const { href, onClick } = props
+  const navigate = useNavigate()
 
-        private onClick = (e: React.MouseEvent) => {
-            const { href, onClick, history } = this.props;
-            if (href) {
-                e.preventDefault();
-                history.push(href);
-            }
-
-            if (onClick) {
-                onClick(e);
-            }
-        }
-
-        render() {
-            return (
-                <IonItem {...this.props} onClick={this.onClick}/>
-            )
-        }
+  const handleClick = (e: MouseEvent) => {
+    if (href) {
+      e.preventDefault();
+      navigate(href)
     }
-);
+
+    if (onClick) {
+      onClick(e);
+    }
+  }
+  return (
+    <IonItem {...props} onClick={handleClick} />
+  )
+}

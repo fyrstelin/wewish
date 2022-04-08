@@ -1,4 +1,4 @@
-import React, { FC, useState, useRef } from 'react';
+import { FC, useState, useRef } from 'react';
 import * as Models from './Models';
 import cx from 'classnames';
 import { useUser } from '../User/UserProvider';
@@ -8,7 +8,7 @@ import { useTranslation } from '../Localization';
 import { Swipe } from '../Controls/Swipe';
 import { usePopupManager } from '../Controls/Popups';
 import { Item } from '../Controls/Item';
-import { exit, logoEuro, trash, undo, checkmark } from 'ionicons/icons';
+import { exit, logoEuro, trash, arrowUndo, checkmark } from 'ionicons/icons';
 
 type Props = {
   wishlistId: string
@@ -27,7 +27,7 @@ export const WishItem: FC<Props> = ({ wish, wishlistId, icon, onMarkAsBought, on
 
   const [popupOpen, setPopupOpen] = useState(false)
 
-  const slidingItem = useRef<HTMLIonItemSlidingElement | null>(null)
+  const slidingItem = useRef<HTMLIonItemSlidingElement | null>(null)
 
   const markAsBought = (amount: number) => onMarkAsBought(wish, amount);
 
@@ -71,7 +71,7 @@ export const WishItem: FC<Props> = ({ wish, wishlistId, icon, onMarkAsBought, on
     ? ''
     : `${wish.amount}x`;
 
-  const subheader: React.ReactNode[] = [];
+  const subheader: ReactNode[] = [];
 
   if (wish.$type === 'public-wish' && wish.amountBought > 0 && wish.amount !== 1) {
     subheader.push(`${wish.amountBought} ${wish.amount !== 'unlimited' ? `of ${wish.amount}` : ''} bought`);
@@ -124,7 +124,7 @@ export const WishItem: FC<Props> = ({ wish, wishlistId, icon, onMarkAsBought, on
                   wish.amount !== 'unlimited' &&
                   <>
                     /
-                                  {wish.amount}
+                    {wish.amount}
                   </>
                 }
               </>
@@ -135,7 +135,7 @@ export const WishItem: FC<Props> = ({ wish, wishlistId, icon, onMarkAsBought, on
           icon={
             wish.$type === 'owned-wish'
               ? trash
-              : bought ? undo : checkmark}
+              : bought ? arrowUndo : checkmark}
           color={bought || wish.$type === 'owned-wish' ? 'danger' : 'success'}
           onSwipe={swipe}
         />

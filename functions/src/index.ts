@@ -428,7 +428,7 @@ export const host = functions.https.onRequest(async (req, res) => {
 
   if (match) {
     const wishlistId = match[1]
-    const [title, description] = await Promise.all([
+    const [title, description] = await Promise.all([
       dbGet<string>(`/wishlists/${wishlistId}/title`, 'WeWish'),
       dbGet<string>(`/wishlists/${wishlistId}/description`, '')
     ])

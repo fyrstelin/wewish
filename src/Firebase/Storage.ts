@@ -1,4 +1,4 @@
 import * as App from './App';
-import 'firebase/storage';
+import { getStorage } from 'firebase/storage';
 
-export const useStorage = () => App.useApp().storage()
+export const useStorage = () => getStorage(App.useApp())

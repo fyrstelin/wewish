@@ -3,8 +3,9 @@ import { Patch, Id } from '../Utils';
 import { useDatabase } from '../Firebase/Database'
 import { useFunction } from '../Firebase/Functions'
 import { useUser } from '../User/UserProvider'
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useShare } from '../Utils/Share';
+import { ref, update } from 'firebase/database';
 
 export type WishlistUpdate = {
   title?: string
@@ -17,31 +18,31 @@ export const useApi = (id: string) => {
   const db = useDatabase()
   const resetWishlist = useFunction('resetWishlist')
   const { user } = useUser()
-  const history = useHistory()
+  const navigate = useNavigate()
   const share = useShare()
-  
+
   return {
-    save: async (update: WishlistUpdate) => {
-      await db.ref().update(Patch({
-        [`/wishlists/${id}/title`]: update.title,
-        [`/wishlists/${id}/themeColor`]: update.themeColor,
-        [`/wishlists/${id}/secondaryThemeColor`]: update.secondaryThemeColor,
-        [`/wishlists/${id}/access`]: update.access,
+    save: async (patch: WishlistUpdate) => {
+      await update(ref(db), Patch({
+        [`/wishlists/${id}/title`]: patch.title,
+        [`/wishlists/${id}/themeColor`]: patch.themeColor,
+        [`/wishlists/${id}/secondaryThemeColor`]: patch.secondaryThemeColor,
+        [`/wishlists/${id}/access`]: patch.access,
       }));
     },
-    
+
     delete: async () => {
       const userId = user!.id;
-      await db.ref().update({
+      await update(ref(db), {
         [`/wishlists/${id}/members/${userId}`]: null,
         [`/users/${userId}/wishlists/${id}`]: null
       });
-      history.replace('/');
+      navigate('/', { replace: true })
     },
 
     addCoOwner: async () => {
       const inviteId = Id(48);
-      await db.ref().update({
+      await update(ref(db), {
         [`/invites/${inviteId}`]: id
       });
       share(`/invites/${id}`);
@@ -52,7 +53,7 @@ export const useApi = (id: string) => {
     },
 
     removeMember: async (id: string) => {
-      await db.ref().update({
+      await update(ref(db), {
         [`/wishlists/${id}/members/${id}`]: null
       });
     }

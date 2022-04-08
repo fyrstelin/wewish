@@ -1,4 +1,3 @@
-import React from 'react';
 import { Api } from "./Api";
 import { QueryHome } from './Provider';
 import { Home } from './Home';

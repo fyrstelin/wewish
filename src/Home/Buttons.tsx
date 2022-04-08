@@ -1,4 +1,4 @@
-import React, { FC, useState, useRef, useEffect } from 'react';
+import { FC, useState, useRef, useLayoutEffect, MouseEvent } from 'react';
 import { useUser } from '../User/UserProvider';
 import { useTranslation } from '../Localization';
 import { IonButton, IonIcon, IonPopover, IonList, IonContent, IonLabel } from '@ionic/react';
@@ -15,17 +15,13 @@ export const Buttons: FC<Props> = ({ onLogout }) => {
 
   const [event, setEvent] = useState<Event>()
 
-  const popoverRef = useRef<HTMLIonPopoverElement | null>()
+  const popoverRef = useRef<HTMLIonPopoverElement | null>(null)
   const mountedRef = useRef(true)
-  
-  useEffect(() => {
-    return () => {
-      if (event) {
-        popoverRef.current?.dismiss()
-      }
-      mountedRef.current = false
-    }
-  })
+
+  useLayoutEffect(() => () => {
+    mountedRef.current = false
+    popoverRef.current?.dismiss()
+  }, [])
 
   const closeMenu = () => {
     if (!mountedRef.current) {
@@ -34,11 +30,11 @@ export const Buttons: FC<Props> = ({ onLogout }) => {
     setEvent(undefined)
   };
 
-  const openMenu = (e: React.MouseEvent) => {
+  const openMenu = (e: MouseEvent) => {
     e.persist();
     setEvent(e.nativeEvent)
   };
-  
+
   return (
     user && <>
       <IonButton
@@ -47,7 +43,7 @@ export const Buttons: FC<Props> = ({ onLogout }) => {
         <IonIcon icon={person} />
       </IonButton>
       <IonPopover
-        ref={ref => popoverRef.current = ref}
+        ref={popoverRef}
         isOpen={!!event}
         onDidDismiss={closeMenu}
         event={event}

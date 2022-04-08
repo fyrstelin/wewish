@@ -17,7 +17,7 @@ export const Patch = (patcher: { [path: string]: any}) => Object.keys(patcher)
 
 export const Keys = <T>(t: T) => t === null ? [] : Object.keys(t).map(x => x as keyof T);
 
-export const ToDictionary = <T, U>(ts: ReadonlyArray<T>, keySelector: (t: T) => string | number, valueSelector: (t: T) => U) =>
+export const ToDictionary = <T, U>(ts: ReadonlyArray<T>, keySelector: (t: T) => string | number, valueSelector: (t: T) => U) =>
     ts.reduce((us, t) => ({
         ...us,
         [keySelector(t)]: valueSelector(t)

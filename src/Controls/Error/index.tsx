@@ -1,7 +1,6 @@
-import React from 'react';
+import { FC } from 'react';
 import './style.css';
 
-type Props = { children: React.ReactNode };
-export const Error = ({children}: Props) => <div className='error'>
-    {children}
+export const Error: FC = ({ children }) => <div className='error'>
+  {children}
 </div>

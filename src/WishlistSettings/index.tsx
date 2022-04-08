@@ -1,4 +1,3 @@
-import React from 'react';
 import { useState } from './Provider';
 import { Page } from './Page';
 import { useApi } from './api';
@@ -20,5 +19,5 @@ export const WishlistSettings = ({ id }: Props) => {
     onAddCoOwner={api.addCoOwner}
     onReset={api.reset}
     onRemoveMember={api.removeMember}
-  /> : <Loader/>
+  /> : <Loader />
 }

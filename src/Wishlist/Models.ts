@@ -1,15 +1,15 @@
 type CommonWishlist = Readonly<{
     id: string
     title: string
-    themeColor: string | undefined
-    secondaryThemeColor: string | undefined
+    themeColor: string | undefined
+    secondaryThemeColor: string | undefined
     description: string
     owners: ReadonlyArray<string>
 }>
 
 type OwnedWishlist = CommonWishlist & Readonly<{
     $type: 'owned'
-    access: 'draft' | 'private' | 'public'
+    access: 'draft' | 'private' | 'public'
     wishes: ReadonlyArray<OwnedWish>
     accessRequests: ReadonlyArray<AccessRequest>
 }>
@@ -41,7 +41,7 @@ type DraftWishlist = Readonly<{
 export type Wishlist
     = OwnedWishlist
     | PublicWishlist
-    | PrivateWishlist
+    | PrivateWishlist
     | DraftWishlist
 
 
@@ -54,7 +54,7 @@ type CommonWish = Readonly<{
     price: 1 | 2 | 3 | undefined 
     imageUrl: string
     thumbnailUrl: string
-    amount: 'unlimited' | number
+    amount: 'unlimited' | number
 }>
 
 export type OwnedWish = CommonWish & Readonly<{

@@ -15,7 +15,7 @@ export const Provider =
                 this.on(x => x.user!.email),
                 this.on(x => x.user!.id).pipe(
                     switchMap(userId => this.listen<Api.User>(`users/${userId}`)),
-                    map(user => user || {})
+                    map(user => user || {})
                 ),
                 (providers, email, user) => {
                     const idx = supportedLangs.indexOf(user.lang as any);

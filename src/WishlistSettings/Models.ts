@@ -2,7 +2,7 @@ import * as Api from '../Api';
 
 export type Wishlist = Readonly<{
     title: string
-    themeColor: string | undefined
+    themeColor: string | undefined
     secondaryThemeColor: string | undefined
     members: ReadonlyArray<User>
     access: Api.Access

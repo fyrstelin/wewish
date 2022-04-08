@@ -1,5 +1,5 @@
-import React, { FC } from 'react';
-import { useHistory } from '../Utils/History';
+import { FC, ReactNode } from 'react';
+import history from '../Utils/History';
 import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon } from '@ionic/react';
 import './index.css';
 import { arrowBack } from 'ionicons/icons';
@@ -7,12 +7,10 @@ import { arrowBack } from 'ionicons/icons';
 type Props = {
   title: string | undefined
   parent: string | undefined
-  rightContent: React.ReactNode | undefined
+  rightContent: ReactNode | undefined
 };
 
 export const Header: FC<Props> = ({ title, parent, rightContent, children }) => {
-  const history = useHistory()
-
   const up = () => {
     if (parent) {
       history.up(parent);

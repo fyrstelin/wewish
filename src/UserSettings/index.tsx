@@ -1,92 +1,99 @@
-import React from 'react';
+import { useState } from 'react';
 import { Provider } from './Provider';
 import { UserSettings, UserUpdate } from './UserSettings';
 import { Patch } from '../Utils';
-import { WithAuth } from '../Firebase/Auth';
-import { WithDatabase } from '../Firebase/Database';
+import { useAuth, useDatabase } from '../Firebase';
 import { Provider as AuthProvider } from '../User';
 import { detect } from 'detect-browser';
-import * as Firebase from 'firebase/app';
-import 'firebase/auth';
-import { WithToaster } from '../Controls/Toaster';
-import { WithTranslation } from '../Localization';
-import { MicrosoftProvider } from '../Utils/MicrosoftProvider';
+import {
+  AuthProvider as FirebaseAuthProvider,
+  GoogleAuthProvider,
+  FacebookAuthProvider,
+  EmailAuthProvider,
+  linkWithPopup,
+  linkWithRedirect,
+  unlink,
+  linkWithCredential
+} from 'firebase/auth';
+import { useToaster } from '../Controls/Toaster';
+import { useTranslation } from '../Localization';
+import { ref, update } from 'firebase/database';
 
 const browser = detect();
 
-const Providers: Dictionary<new () => Firebase.auth.AuthProvider> = {
-    'google.com': Firebase.auth.GoogleAuthProvider,
-    'facebook.com': Firebase.auth.FacebookAuthProvider,
-    'microsoft.com': MicrosoftProvider
+const Providers: Dictionary<new () => FirebaseAuthProvider> = {
+  'google.com': GoogleAuthProvider,
+  'facebook.com': FacebookAuthProvider,
 };
 
-export const Root = 
-    WithDatabase<{}>(
-    WithToaster(
-    WithTranslation(
-    WithAuth(
-        class Root extends React.PureComponent<WithDatabase & WithAuth & WithToaster & WithTranslation> {
-        private save = async (update: UserUpdate) => {
-            const userId = this.props.auth.currentUser!.uid;
-            await this.props.database.ref().update(Patch({
-                [`users/${userId}/name`]: update.name,
-                [`users/${userId}/birthday`]: update.birthday,
-                [`users/${userId}/lang`]: update.lang,
-                [`users/${userId}/pushEnabled`]: update.enablePush
-            }));
-        };
+export const Root = () => {
+  const auth = useAuth()
+  const db = useDatabase()
+  const translation = useTranslation()
+  const toaster = useToaster()
 
-        private resetTutorial = async () => {
-            const userId = this.props.auth.currentUser!.uid;
-            await this.props.database.ref().update({
-                [`/users/${userId}/skills`]: null
-            });
+  const [updateCount, setUpdateCount] = useState(0)
+
+  const forceUpdate = () => setUpdateCount(updateCount + 1)
+
+  const save = async (input: UserUpdate) => {
+    const userId = auth.currentUser!.uid;
+    await update(ref(db), Patch({
+      [`users/${userId}/name`]: input.name,
+      [`users/${userId}/birthday`]: input.birthday,
+      [`users/${userId}/lang`]: input.lang,
+      [`users/${userId}/pushEnabled`]: input.enablePush
+    }));
+  };
+
+  const resetTutorial = async () => {
+    const userId = auth.currentUser!.uid;
+    await update(ref(db), {
+      [`/users/${userId}/skills`]: null
+    });
+  }
+
+  const connect = async (providerId: AuthProvider, email?: string, password?: string) => {
+    const errors: any = translation.errors;
+
+    try {
+      if (providerId === 'password') {
+        if (email && password) {
+          const user = auth.currentUser!;
+          await linkWithCredential(user, EmailAuthProvider.credential(email, password))
         }
-
-        private connect = async (providerId: AuthProvider, email?: string, password?: string) => {
-            const errors: any = this.props.translation.errors;
-
-            try {
-                if (providerId === 'password') {
-                    if (email && password) {
-                        const user = this.props.auth.currentUser!;
-                        await user.linkAndRetrieveDataWithCredential(Firebase.auth.EmailAuthProvider.credential(email, password));
-                    }
-                } else {
-                    const Provider = Providers[providerId];
-                    const provider = new Provider();
-                    const user = this.props.auth.currentUser!;
-                    if (browser && browser.os && browser.os !== 'iOS') {
-                        await user.linkWithPopup(provider);
-                    } else {
-                        await user.linkWithRedirect(provider);
-                    }
-                }
-            } catch (e) {
-                this.props.toaster.next({
-                    message: errors[e.code] || e.message,
-                    variant: 'danger'
-                });
-            }
-            this.forceUpdate();
+      } else {
+        const Provider = Providers[providerId];
+        const provider = new Provider();
+        const user = auth.currentUser!;
+        if (browser && browser.os && browser.os !== 'iOS') {
+          await linkWithPopup(user, provider)
+        } else {
+          await linkWithRedirect(user, provider)
         }
-
-        private disconnect = async (provider: AuthProvider) => {
-            await this.props.auth.currentUser!.unlink(provider)
-            this.forceUpdate();
-        }
-
-        render() {
-            return (
-                <Provider render={user =>
-                    <UserSettings user={user} 
-                        onSave={this.save} 
-                        onResetTutorial={this.resetTutorial}
-                        onConnect={this.connect}
-                        onDisconnect={this.disconnect}
-                    />
-                }/>
-            );
-        }
+      }
+    } catch (e: any) {
+      toaster.next({
+        message: errors[e.code] || e.message,
+        variant: 'danger'
+      });
     }
-))));
+    forceUpdate();
+  }
+
+  const disconnect = async (provider: AuthProvider) => {
+    await unlink(auth.currentUser!, provider)
+    forceUpdate();
+  }
+
+  return (
+    <Provider render={user =>
+      <UserSettings user={user}
+        onSave={save}
+        onResetTutorial={resetTutorial}
+        onConnect={connect}
+        onDisconnect={disconnect}
+      />
+    } />
+  );
+}

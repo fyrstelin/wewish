@@ -1,4 +1,5 @@
-import React, { useContext, FC, useMemo } from 'react';
+import { ref, update } from 'firebase/database';
+import { useContext, FC, useMemo, createContext } from 'react';
 import { useDatabase, useAuth } from '../Firebase';
 import { Id } from '../Utils';
 
@@ -12,7 +13,7 @@ const EmptyApi: Api = {
   addWishlist: async (title: string) => console.log('addWishlist', title)
 }
 
-export const Context = React.createContext<Api>(EmptyApi);
+export const Context = createContext<Api>(EmptyApi);
 
 export const useApi = () => useContext(Context)
 
@@ -26,7 +27,7 @@ export const Api: FC = ({ children }) => {
     addWishlist: async (title: string) => {
       const id = Id();
       const userId = auth.currentUser!.uid;
-      const update = {
+      const values = {
         [`users/${userId}/wishlists/${id}`]: true,
         [`users/${userId}/skills/add-wish-list`]: true,
         [`wishlists/${id}`]: {
@@ -34,7 +35,7 @@ export const Api: FC = ({ children }) => {
           title
         },
       };
-      db.ref().update(update);
+      update(ref(db), values);
     }
   }), [db, auth])
 

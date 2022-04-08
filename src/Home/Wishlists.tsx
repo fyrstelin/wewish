@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import * as Models from './Models';
 import format from 'dateformat';
 import { useTranslation } from '../Localization';

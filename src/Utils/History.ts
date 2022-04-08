@@ -1,4 +1,3 @@
-import { useContext, createContext } from 'react';
 import { createBrowserHistory } from 'history';
 
 const history = createBrowserHistory();
@@ -7,7 +6,7 @@ const stack: Array<{ path: string, key: (string | undefined) }> = [{
   path: history.location.pathname
 }];
 
-history.listen((location, action) => {
+history.listen(({ action, location }) => {
   if (action === 'PUSH') {
     stack.push({
       key: location.key,
@@ -31,19 +30,19 @@ history.listen((location, action) => {
 });
 
 
-const Context = createContext(Object.assign(
+const historyWithUp = Object.assign(
   history,
   {
     up: (parent: string) => {
       if (stack.length === 1 || stack[stack.length - 2].path !== parent) {
         history.replace(parent);
       } else {
-        history.goBack();
+        history.back()
       }
     }
   }
-));
+);
 
-export const useHistory = () => useContext(Context)
+export const useHistory = () => historyWithUp
 
-export const { Consumer } = Context
+export default historyWithUp

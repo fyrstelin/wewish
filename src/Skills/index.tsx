@@ -1,8 +1,8 @@
-import React from 'react';
 import { WithUser } from '../User/UserProvider';
 import { switchMap, map } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { FirebaseComponent } from '../Firebase/FirebaseComponent';
+import { createContext, PureComponent } from 'react';
 
 export type Skill
   = 'add-wish-list'
@@ -11,8 +11,8 @@ export type Skill
   | 'mark-as-bought'
   | 'star';
 
-const SkillsContext = React.createContext([] as ReadonlyArray<Skill>);
-const RequiresContext = React.createContext(undefined as Skill | undefined)
+const SkillsContext = createContext([] as ReadonlyArray<Skill>);
+const RequiresContext = createContext(undefined as Skill | undefined)
 
 type State = {
   skills: ReadonlyArray<Skill>
@@ -21,7 +21,7 @@ type State = {
 
 export const Skills =
   WithUser()(
-    class Skills extends FirebaseComponent<{ children: React.ReactNode } & WithUser, State> {
+    class Skills extends FirebaseComponent<{} & WithUser, State> {
       state: State = {
         skills: []
       }
@@ -48,7 +48,7 @@ type RequiresProps = {
   skills: ReadonlyArray<Skill>
 }
 
-export class Requires extends React.PureComponent<RequiresProps> {
+export class Requires extends PureComponent<RequiresProps> {
   render() {
     const { skills, children } = this.props;
     return (
@@ -61,7 +61,7 @@ export class Requires extends React.PureComponent<RequiresProps> {
   }
 }
 
-export class Teaches extends React.PureComponent<{ skill: Skill }> {
+export class Teaches extends PureComponent<{ skill: Skill }> {
   render() {
     return <RequiresContext.Consumer>{requiredSkill =>
       requiredSkill === this.props.skill

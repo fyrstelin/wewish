@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState, useEffect } from 'react';
+import { FC, useMemo, useState, useEffect, ComponentType } from 'react';
 import { Context } from './context';
 import { Subject, Observable, Observer } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
@@ -10,29 +10,29 @@ const DISPLAY_TIME = 7500;
 const DELAY_TIME = 500;
 
 export type WithToaster = { toaster: Observer<Toast> };
-export const WithToaster = <TProps, _ = {}>(Component: React.ComponentType<TProps & WithToaster>) => {
-  return (props: TProps) => <Context.Consumer>{toaster => 
+export const WithToaster = <TProps extends any>(Component: ComponentType<TProps & WithToaster>) => {
+  return (props: TProps) => <Context.Consumer>{toaster =>
     <Component toaster={toaster} {...props} />
   }</Context.Consumer>
 }
 
-export const Toaster: FC = ({ children}) => {
+export const Toaster: FC = ({ children }) => {
   const toasts = useMemo(() => new Subject<Toast>(), [])
   const [toast, setToast] = useState<Toast>()
 
   useEffect(() => {
     const s = toasts
       .pipe(concatMap(toast => new Observable<Toast | undefined>(stream => {
-    
+
         stream.next(toast);
-    
+
         const t1 = setTimeout(() => {
           stream.next(undefined);
         }, DISPLAY_TIME);
         const t2 = setTimeout(() => {
           stream.complete();
         }, DISPLAY_TIME + DELAY_TIME);
-    
+
         return () => {
           clearTimeout(t1);
           clearTimeout(t2);

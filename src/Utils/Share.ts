@@ -3,11 +3,9 @@ import { copy } from './copy';
 import { useTranslation } from '../Localization';
 
 
-type share = (url: string) => Promise<void>;
-const share: share | null = (() => {
-  const nav = (navigator as any);
-  if (nav.share) {
-    return (url: string) => nav.share({ url });
+const share = (() => {
+  if (navigator.share) {
+    return (url: string) => navigator.share({ url });
   }
   return null;
 })();

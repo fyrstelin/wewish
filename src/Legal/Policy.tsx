@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Page } from '../Page';
 import { Section } from './Section';
 import { P } from './Typographies';
@@ -14,8 +14,8 @@ export const Policy: FC = () => (
       <Section>
         <P>
           Your privacy is important to us. It is WeWish's policy to respect your privacy regarding
-            any information we may collect from you across our website, <a href="https://wewish.app">https://wewish.app</a>,
-            and other sites we own and operate.
+          any information we may collect from you across our website, <a href="https://wewish.app">https://wewish.app</a>,
+          and other sites we own and operate.
         </P>
         <P>
           We only ask for personal information when we truly need it to provide a service to you.

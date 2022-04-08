@@ -1,10 +1,9 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import './styles.css';
 import { useTranslation } from '../../Localization';
 import { detect } from 'detect-browser';
 import { useAuth, useDatabase } from '../../Firebase';
-import Firebase from 'firebase/app';
-import 'firebase/auth';
+import { AuthProvider, signInWithPopup, signInWithRedirect, FacebookAuthProvider, GoogleAuthProvider, signInAnonymously, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, sendEmailVerification } from 'firebase/auth';
 import { useToaster } from '../../Controls/Toaster';
 import { usePopupManager } from '../../Controls/Popups';
 import { Link } from 'react-router-dom';
@@ -12,6 +11,8 @@ import { IonContent, IonSpinner, IonButton, IonInput, IonItem, IonLabel, IonList
 import { InputChangeEventDetail } from '@ionic/core';
 import { Modal } from '../../Controls/Modal';
 import { useHashController } from '../../Utils/Hash';
+import { sendPasswordResetEmail } from 'firebase/auth';
+import { ref, set } from 'firebase/database';
 
 const browser = detect();
 
@@ -31,9 +32,9 @@ type Props = {
 }
 
 
-export const Login: FC<Props> = ({ onLogin }) => {
-  const { login, errors } = useTranslation()
-  const popupManager = usePopupManager()
+export const Login: FC<Props> = ({ onLogin }) => {
+  const { login, errors } = useTranslation()
+  const popupManager = usePopupManager()
   const toaster = useToaster()
   const auth = useAuth()
   const hashController = useHashController()
@@ -48,12 +49,12 @@ export const Login: FC<Props> = ({ onLogin }) => {
   })
 
 
-  const signInWith = async (provider: Firebase.auth.AuthProvider) => {
+  const signInWith = async (provider: AuthProvider) => {
     if (browser && browser.os && browser.os !== 'iOS') {
       setLoading(true)
       try {
-        await auth.signInWithPopup(provider);
-      } catch (e) {
+        await signInWithPopup(auth, provider);
+      } catch (e: any) {
         toaster.next({
           message: (errors as any)[e.code] || e.message,
           variant: 'danger'
@@ -61,18 +62,18 @@ export const Login: FC<Props> = ({ onLogin }) => {
         setLoading(false)
       }
     } else {
-      await auth.signInWithRedirect(provider);
+      await signInWithRedirect(auth, provider)
     }
     onLogin();
   }
-  
+
   const signInWithFacebook = async () => {
-    const provider = new Firebase.auth.FacebookAuthProvider();
+    const provider = new FacebookAuthProvider();
     await signInWith(provider);
   };
 
   const signInWithGoogle = async () => {
-    const provider = new Firebase.auth.GoogleAuthProvider();
+    const provider = new GoogleAuthProvider();
     await signInWith(provider);
   }
 
@@ -84,8 +85,8 @@ export const Login: FC<Props> = ({ onLogin }) => {
     if (confirmed) {
       setLoading(true)
       try {
-        await auth.signInAnonymously();
-      } catch (e) {
+        await signInAnonymously(auth)
+      } catch (e: any) {
         setLoading(false)
         toaster.next({
           message: (errors as any)[e.code] || e.message
@@ -98,8 +99,8 @@ export const Login: FC<Props> = ({ onLogin }) => {
     hashController.remove('modal');
     setLoading(true)
     try {
-      await auth.signInWithEmailAndPassword(emailState.email, emailState.password);
-    } catch (e) {
+      await signInWithEmailAndPassword(auth, emailState.email, emailState.password);
+    } catch (e: any) {
       toaster.next({
         message: (errors as any)[e.code] || e.message,
         variant: 'danger'
@@ -113,18 +114,18 @@ export const Login: FC<Props> = ({ onLogin }) => {
     setLoading(true)
     const { email, password, name } = emailState;
     try {
-      const { user } = await auth.createUserWithEmailAndPassword(email, password);
+      const { user } = await createUserWithEmailAndPassword(auth, email, password);
       if (user) {
         await Promise.all([
-          db.ref(`/users/${user.uid}/name`).set(name),
-          user.updateProfile({
+          set(ref(db, `/users/${user.uid}/name`), name),
+          updateProfile(user, {
             displayName: name,
             photoURL: null
           }),
-          user.sendEmailVerification()
+          sendEmailVerification(user)
         ]);
       }
-    } catch (e) {
+    } catch (e: any) {
       toaster.next({
         message: (errors as any)[e.code] || e.message,
         variant: 'danger'
@@ -136,13 +137,13 @@ export const Login: FC<Props> = ({ onLogin }) => {
   const resetPassword = async () => {
     setLoading(true)
     try {
-      await auth.sendPasswordResetEmail(emailState.email);
+      await sendPasswordResetEmail(auth, emailState.email);
 
       setEmailState(state => ({
         ...state,
         step: 'input'
       }));
-    } catch (e) {
+    } catch (e: any) {
       toaster.next({
         message: (errors as any)[e.code] || e.message,
         variant: 'danger'
@@ -193,7 +194,7 @@ export const Login: FC<Props> = ({ onLogin }) => {
 
     if (name != null) {
       setEmailState(state => ({
-        ...state, name 
+        ...state, name
       }));
     }
   }

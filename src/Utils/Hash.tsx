@@ -1,12 +1,12 @@
-import React from 'react';
+import { ComponentType, createContext, PureComponent } from "react";
 
-const context = React.createContext<Dictionary<string | true>>({});
+const context = createContext<Dictionary<string | true>>({});
 
 export type WithHash = {
   hash: Dictionary<string | true>
 }
-export function WithHash<TProps>(C: React.ComponentType<TProps & WithHash>) {
-  return (props: TProps & React.Props<{}>) => <context.Consumer>{hash =>
+export function WithHash<TProps>(C: ComponentType<TProps & WithHash>) {
+  return (props: TProps) => <context.Consumer>{hash =>
     <C hash={hash} {...props} />
   }</context.Consumer>
 }
@@ -76,11 +76,11 @@ const HashController: HashController = (() => {
 export const useHashController = () => HashController
 
 export type WithHashController = { hashController: HashController }
-export function WithHashController<TProps>(C: React.ComponentType<TProps & WithHashController>) {
-  return (props: TProps & React.Props<{}>) => <C hashController={HashController} {...props} />
+export function WithHashController<TProps>(C: ComponentType<TProps & WithHashController>) {
+  return (props: TProps) => <C hashController={HashController} {...props} />
 }
 
-export class Hash extends React.PureComponent<{}, State> {
+export class Hash extends PureComponent<{}, State> {
   state: State = {
     hash: {}
   }
