@@ -60,7 +60,7 @@ const Wrappers = {
   },
   Invite: () => {
     const { code } = useParams<'code'>()
-    return <Invite code={code!}/>
+    return <Invite code={code!} />
   }
 }
 
@@ -83,8 +83,8 @@ export const App = () => {
                       <Routes>
                         <Route path='/' element={<Home.Root />} />
                         <Route path='/wishlists/:id/settings' element={<Wrappers.WishlistSettings />} />
-                        <Route path='/wishlists/:id' element={<Wrappers.Wishlist />}/>
-                        <Route path='/wishlists/:id/:wishId' element={<Wrappers.Wishlist />}/>
+                        <Route path='/wishlists/:id' element={<Wrappers.Wishlist />} />
+                        <Route path='/wishlists/:id/:wishId' element={<Wrappers.Wishlist />} />
                         <Route path='/user-settings' element={<UserSettings.Root />} />
                         <Route path='/policy' element={<Policy />} />
                         <Route path='/terms' element={<Terms />} />

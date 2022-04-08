@@ -73,8 +73,8 @@ export const UserProvider: FC = ({ children }) => {
 
 export type WithUser = { user: User | null, getUser: (message?: string) => Promise<User> };
 export function WithUser(login?: true) {
-  return function WithUser<Props>(Component: ComponentType<Props & WithUser>) {
-    return (props: Props) =>
+  return function WithUser<TProps>(Component: ComponentType<TProps & WithUser>) {
+    return (props: TProps) =>
       <OldUserprovider login={login}>{(user, getUser) =>
         <Component user={user} getUser={getUser} {...props} />
       }</OldUserprovider>;

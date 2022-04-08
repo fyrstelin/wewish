@@ -2,7 +2,7 @@ import { WithUser } from '../User/UserProvider';
 import { switchMap, map } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { FirebaseComponent } from '../Firebase/FirebaseComponent';
-import { createContext, PureComponent } from 'react';
+import { createContext, PureComponent, ReactNode } from 'react';
 
 export type Skill
   = 'add-wish-list'
@@ -21,7 +21,7 @@ type State = {
 
 export const Skills =
   WithUser()(
-    class Skills extends FirebaseComponent<{} & WithUser, State> {
+    class Skills extends FirebaseComponent<{ children: ReactNode } & WithUser, State> {
       state: State = {
         skills: []
       }
