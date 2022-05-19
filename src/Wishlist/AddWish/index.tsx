@@ -138,7 +138,7 @@ export const AddWish =
           .sort();
 
         return (
-          <div className='add-wish'>
+          <form className='add-wish'>
             <IonLoading
               isOpen={!!addingWish}
               onDidDismiss={() => { }}
@@ -169,7 +169,7 @@ export const AddWish =
             <Teaches skill='add-wish'>
               <Help variant='bottom'>{tutorial['add-wish']}</Help>
             </Teaches>
-          </div>
+          </form>
         );
       }
     }
