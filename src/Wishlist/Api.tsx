@@ -1,6 +1,6 @@
 import { equalTo, get, onValue, orderByChild, query, ref, update } from 'firebase/database';
 import { ref as storageRef, uploadBytes } from 'firebase/storage'
-import { createContext, FC, useMemo, useContext } from 'react';
+import { createContext, FC, useMemo, useContext, PropsWithChildren } from 'react';
 import { useStorage, useDatabase, useAuth, useFunction } from '../Firebase';
 import { Id, Patch } from '../Utils';
 
@@ -79,7 +79,7 @@ const Context = createContext<Api>(EmptyApi);
 
 export const useApi = () => useContext(Context)
 
-export const ApiProvider: FC<{ wishlistId: string }> = ({
+export const ApiProvider: FC<PropsWithChildren<{ wishlistId: string }>> = ({
   wishlistId,
   children
 }) => {

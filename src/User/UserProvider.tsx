@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, FC, useMemo, useContext, ComponentType, ReactNode } from 'react';
+import { useState, useEffect, createContext, FC, useMemo, useContext, ComponentType, ReactNode, PropsWithChildren } from 'react';
 import { User, Provider } from '.';
 import * as Firebase from '../Firebase';
 import { Login } from './Login';
@@ -27,7 +27,7 @@ const newUser = (user: FirebaseUser | null) => user
   : null
 
 
-export const UserProvider: FC = ({ children }) => {
+export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
   const auth = Firebase.useAuth()
   const toaster = useToaster()
 

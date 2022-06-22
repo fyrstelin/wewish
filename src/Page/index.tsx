@@ -1,4 +1,4 @@
-import { FC, ReactNode } from 'react';
+import { FC, PropsWithChildren, ReactNode } from 'react';
 import { Header } from './Header';
 import { Title } from '../Controls/Portals/Title';
 import { IonContent } from '@ionic/react';
@@ -12,7 +12,7 @@ type Props = {
   classNames?: string
 };
 
-export const Page: FC<Props> = ({ title, parent, buttons, headerContent, classNames, children }) => (
+export const Page: FC<PropsWithChildren<Props>> = ({ title, parent, buttons, headerContent, classNames, children }) => (
   <>
     <Title>{title || 'WeWish'}</Title>
     <Header

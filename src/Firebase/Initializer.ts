@@ -1,14 +1,15 @@
-import { WithAuth } from './Auth';
 import { timer, Observable, combineLatest } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { ReactElement, useEffect, useState } from 'react';
+import { useAuth } from '.';
 
 type Props = {
   delay?: number
   children: (initialized: boolean) => ReactElement
 }
 
-export const Initializer = WithAuth(({ delay, auth, children }: Props & WithAuth) => {
+export const Initializer = ({ delay, children }: Props) => {
+  const auth = useAuth()
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
@@ -23,4 +24,4 @@ export const Initializer = WithAuth(({ delay, auth, children }: Props & WithAuth
   });
 
   return children(isInitialized);
-});
+}

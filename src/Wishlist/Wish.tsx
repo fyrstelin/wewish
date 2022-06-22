@@ -1,4 +1,4 @@
-import { FC, useState, useEffect, VFC } from 'react';
+import { FC, useState, useEffect, VFC, PropsWithChildren } from 'react';
 import * as Models from './Models';
 import { IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonContent, IonList, IonItem, IonLabel, IonInput, IonCheckbox } from '@ionic/react';
 import { useTranslation } from '../Localization';
@@ -48,7 +48,7 @@ const PriceLabel: FC<{ children: 1 | 2 | 3 }> = ({ children }) => (
   </IonButtons>
 );
 
-const Item: FC<{ label: string }> = ({ children, label }) => children
+const Item: FC<PropsWithChildren<{ label: string }>> = ({ children, label }) => children
   ? <IonItem>
     <IonLabel position='stacked' color='medium'>{label}</IonLabel>
     {typeof children === 'string'

@@ -3,7 +3,7 @@ import './theme.css';
 import './printable.css';
 import '@ionic/core/css/ionic.bundle.css';
 import 'pwacompat'
-import * as ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Root } from './Root';
 
 import { setupIonicReact } from '@ionic/react'
@@ -34,9 +34,8 @@ const updates = connectable(new Observable<string>(s => {
   })
 ))
 
-ReactDOM.render(
-  <Root updates={updates} />,
-  document.getElementById('root')
-)
+const root = createRoot(document.getElementById('root')!)
+
+root.render(<Root updates={updates} />)
 
 updates.connect()

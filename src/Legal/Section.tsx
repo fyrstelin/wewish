@@ -1,7 +1,7 @@
-import { FC } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import { IonCardContent } from '@ionic/react';
 
-export const Section: FC = ({ children }) =>
+export const Section: FC<PropsWithChildren> = ({ children }) =>
   <IonCardContent>
     {children}
   </IonCardContent>

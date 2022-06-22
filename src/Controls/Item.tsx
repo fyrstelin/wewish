@@ -1,4 +1,4 @@
-import { FC, MouseEvent } from 'react';
+import { FC, MouseEvent, PropsWithChildren } from 'react';
 import { IonItem } from '@ionic/react';
 import { useNavigate } from 'react-router';
 
@@ -10,7 +10,7 @@ type Props = {
   detail?: boolean
 }
 
-export const Item: FC<Props> = (props) => {
+export const Item: FC<PropsWithChildren<Props>> = (props) => {
   const { href, onClick } = props
   const navigate = useNavigate()
 

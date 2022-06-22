@@ -1,5 +1,5 @@
 import cx from 'classnames';
-import { PureComponent } from 'react';
+import { PropsWithChildren, PureComponent } from 'react';
 import './index.css';
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
   className?: string
 };
 
-export class ImagePreview extends PureComponent<Props>
+export class ImagePreview extends PureComponent<PropsWithChildren<Props>>
 {
   render() {
     const { image, height, children, className } = this.props;

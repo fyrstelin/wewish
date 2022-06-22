@@ -1,5 +1,5 @@
 import { ref, update } from 'firebase/database';
-import { useContext, FC, useMemo, createContext } from 'react';
+import { useContext, FC, useMemo, createContext, PropsWithChildren } from 'react';
 import { useDatabase, useAuth } from '../Firebase';
 import { Id } from '../Utils';
 
@@ -17,7 +17,7 @@ export const Context = createContext<Api>(EmptyApi);
 
 export const useApi = () => useContext(Context)
 
-export const Api: FC = ({ children }) => {
+export const Api: FC<PropsWithChildren> = ({ children }) => {
   const db = useDatabase()
   const auth = useAuth()
 

@@ -1,4 +1,4 @@
-import { FC, useContext, useMemo, createContext } from 'react';
+import { FC, useContext, useMemo, createContext, PropsWithChildren } from 'react';
 import { initializeApp, FirebaseApp } from 'firebase/app';
 import 'firebase/messaging';
 import 'firebase/analytics'
@@ -18,7 +18,7 @@ type Props = {
 export const Context = createContext<FirebaseApp>(null as any);
 export const { Consumer, Provider } = Context
 
-export const App: FC<Props> = ({
+export const App: FC<PropsWithChildren<Props>> = ({
   children,
   ...props
 }) => {

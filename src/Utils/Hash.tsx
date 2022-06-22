@@ -1,4 +1,4 @@
-import { ComponentType, createContext, PureComponent } from "react";
+import { ComponentType, createContext, PropsWithChildren, PureComponent } from "react";
 
 const context = createContext<Dictionary<string | true>>({});
 
@@ -80,7 +80,7 @@ export function WithHashController<TProps>(C: ComponentType<TProps & WithHashCon
   return (props: TProps) => <C hashController={HashController} {...props} />
 }
 
-export class Hash extends PureComponent<{}, State> {
+export class Hash extends PureComponent<PropsWithChildren, State> {
   state: State = {
     hash: {}
   }

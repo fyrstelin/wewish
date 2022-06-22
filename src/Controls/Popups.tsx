@@ -1,4 +1,4 @@
-import { createContext, useState, useRef, useCallback, useContext, FC } from 'react';
+import { createContext, useState, useRef, useCallback, useContext, FC, PropsWithChildren } from 'react';
 import { useTranslation } from '../Localization';
 import { IonAlert } from '@ionic/react';
 
@@ -25,7 +25,7 @@ const Context = createContext<Manager>(null as any)
 
 export const usePopupManager = () => useContext(Context)
 
-export const Popups: FC = ({ children }) => {
+export const Popups: FC<PropsWithChildren> = ({ children }) => {
   const [task, setTask] = useState<Task | null>(null)
   const { controls } = useTranslation()
 

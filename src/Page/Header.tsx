@@ -1,4 +1,4 @@
-import { FC, ReactNode } from 'react';
+import { FC, PropsWithChildren, ReactNode } from 'react';
 import history from '../Utils/History';
 import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon } from '@ionic/react';
 import './index.css';
@@ -10,7 +10,7 @@ type Props = {
   rightContent: ReactNode | undefined
 };
 
-export const Header: FC<Props> = ({ title, parent, rightContent, children }) => {
+export const Header: FC<PropsWithChildren<Props>> = ({ title, parent, rightContent, children }) => {
   const up = () => {
     if (parent) {
       history.up(parent);

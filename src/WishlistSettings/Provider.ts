@@ -18,7 +18,7 @@ const useRxState = <TState>(createStream: () => Observable<TState>, deps: any[])
       }))
       .subscribe(setState)
     return () => subscription.unsubscribe()
-  }, [createStream])
+  }, [createStream, setState])
 
   return state
 }

@@ -2,7 +2,7 @@ import { WithUser } from '../User/UserProvider';
 import { switchMap, map } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { FirebaseComponent } from '../Firebase/FirebaseComponent';
-import { createContext, PureComponent, ReactNode } from 'react';
+import { createContext, PropsWithChildren, PureComponent, ReactNode } from 'react';
 
 export type Skill
   = 'add-wish-list'
@@ -48,7 +48,7 @@ type RequiresProps = {
   skills: ReadonlyArray<Skill>
 }
 
-export class Requires extends PureComponent<RequiresProps> {
+export class Requires extends PureComponent<PropsWithChildren<RequiresProps>> {
   render() {
     const { skills, children } = this.props;
     return (
@@ -61,7 +61,7 @@ export class Requires extends PureComponent<RequiresProps> {
   }
 }
 
-export class Teaches extends PureComponent<{ skill: Skill }> {
+export class Teaches extends PureComponent<PropsWithChildren<{ skill: Skill }>> {
   render() {
     return <RequiresContext.Consumer>{requiredSkill =>
       requiredSkill === this.props.skill

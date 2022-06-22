@@ -1,6 +1,6 @@
-import { FC } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import './style.css';
 
-export const Error: FC = ({ children }) => <div className='error'>
+export const Error: FC<PropsWithChildren> = ({ children }) => <div className='error'>
   {children}
 </div>

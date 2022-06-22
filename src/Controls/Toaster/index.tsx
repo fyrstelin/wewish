@@ -1,4 +1,4 @@
-import { FC, useMemo, useState, useEffect, ComponentType } from 'react';
+import { FC, useMemo, useState, useEffect, ComponentType, PropsWithChildren } from 'react';
 import { Context } from './context';
 import { Subject, Observable, Observer } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
@@ -10,13 +10,13 @@ const DISPLAY_TIME = 7500;
 const DELAY_TIME = 500;
 
 export type WithToaster = { toaster: Observer<Toast> };
-export const WithToaster = <TProps extends any>(Component: ComponentType<TProps & WithToaster>) => {
+export const WithToaster = <TProps extends {}>(Component: ComponentType<TProps & WithToaster>) => {
   return (props: TProps) => <Context.Consumer>{toaster =>
     <Component toaster={toaster} {...props} />
   }</Context.Consumer>
 }
 
-export const Toaster: FC = ({ children }) => {
+export const Toaster: FC<PropsWithChildren> = ({ children }) => {
   const toasts = useMemo(() => new Subject<Toast>(), [])
   const [toast, setToast] = useState<Toast>()
 
