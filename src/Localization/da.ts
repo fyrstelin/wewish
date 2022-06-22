@@ -150,5 +150,49 @@ export const Lang: Translation = {
   },
   about: {
     title: 'Om WeWish'
+  },
+  policy: {
+    'title': 'Privatlivspolitik',
+    "revision-date": 'Revisionsdato: 22. juni, 2022',
+    intro: `
+      Denne privatlivspolitik indeholder typer af oplysninger, der indsamles og registreres af WeWish, og hvordan vi bruger dem.
+      If you have additional questions or require more information about our Privacy Policy, do not hesitate to contact us at afkpost@gmail.com
+    `,
+    consent: {
+      title: 'Samtykke',
+      body: `
+        Ved at bruge vores hjemmeside giver du hermed samtykke til vores privatlivspolitik og accepterer dens vilkår.
+      `
+    },
+    information: {
+      title: 'Oplysninger, vi indsamler, og hvordan vi bruger dem',
+      body: `
+        Når du registrerer en konto, beder vi kun om din e-mailadresse og dit navn. Derudover samler vi kun det, du vælger at sætte på dine ønskelister (tekst og billeder), og om du har købt et ønske.
+        Vi bruger de oplysninger, vi indsamler til
+        * Log på
+        * Viser dine ønskelister
+        * Hjælp andre til ikke at købe det samme ønske
+      `
+    },
+    gdpr: {
+      title: 'GDPR Databeskyttelsesrettigheder',
+      body: `
+        Vi vil gerne sikre os, at du er fuldt ud klar over alle dine databeskyttelsesrettigheder. Enhver bruger er berettiget til følgende:
+        Retten til indsigt - Du har ret til at anmode om kopier af dine personoplysninger.
+        Retten til berigtigelse - Du har ret til at anmode om, at vi retter enhver information, du mener er unøjagtig. Du har også ret til at anmode om, at vi udfylder de oplysninger, du mener er ufuldstændige.
+        Retten til sletning - Du har ret til at anmode om, at vi sletter dine personoplysninger under visse betingelser.
+        Ret til at begrænse behandlingen - Du har ret til at anmode om, at vi begrænser behandlingen af dine personoplysninger under visse betingelser.
+        Ret til at gøre indsigelse mod behandling - Du har ret til at gøre indsigelse mod vores behandling af dine personoplysninger under visse betingelser.
+        Retten til dataportabilitet - Du har ret til at anmode om, at vi overfører de data, som vi har indsamlet, til en anden organisation eller direkte til dig under visse betingelser.
+        Hvis du fremsætter en anmodning, har vi en måned til at svare dig. Hvis du ønsker at udøve nogen af disse rettigheder, bedes du kontakte os pr email (afkpost@gmail.com).
+      `
+    },
+    children: {
+      title: "Børns information",
+      body: `
+        En anden del af vores prioritet er at tilføje beskyttelse til børn, mens de bruger internettet. Vi opfordrer forældre og værger til at observere, deltage i og/eller overvåge og guide deres onlineaktivitet.
+        WeWish indsamler ikke bevidst nogen personlig identificerbar information fra børn under 13 år. Hvis du mener, at dit barn har givet denne form for information på vores hjemmeside, opfordrer vi dig kraftigt til at kontakte os med det samme, og vi vil gøre vores bedste for straks at fjerne sådanne oplysninger fra vores optegnelser.
+      `
+    }
   }
 }

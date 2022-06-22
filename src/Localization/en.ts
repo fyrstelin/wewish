@@ -150,5 +150,49 @@ export const Lang: Translation = {
   },
   about: {
     title: 'About WeWish'
+  },
+  policy: {
+    'title': 'Privacy Policy',
+    "revision-date": 'Effective date: June 22, 2022',
+    intro: `
+      This Privacy Policy document contains types of information that is collected and recorded by WeWish and how we use it.
+      If you have additional questions or require more information about our Privacy Policy, do not hesitate to contact us at afkpost@gmail.com
+    `,
+    consent: {
+      title: 'Consent',
+      body: `
+        By using our website, you hereby consent to our Privacy Policy and agree to its terms.
+      `
+    },
+    information: {
+      title: 'Information we collect and how we use it',
+      body: `
+        When you register an account, we only ask for your email address and your name. Besides that we only collect whatever you choose to put into your wish lists (text and images) and whether you bought a wish.
+        We use the information we collect for
+        * Login
+        * Displaying your wish lists
+        * Help others not to buy the same wish
+      `
+    },
+    gdpr: {
+      title: 'GDPR Data Protection Rights',
+      body: `
+        We would like to make sure you are fully aware of all of your data protection rights. Every user is entitled to the following:
+        The right to access - You have the right to request copies of your personal data.
+        The right to rectification - You have the right to request that we correct any information you believe is inaccurate. You also have the right to request that we complete the information you believe is incomplete.
+        The right to erasure - You have the right to request that we erase your personal data, under certain conditions.
+        The right to restrict processing - You have the right to request that we restrict the processing of your personal data, under certain conditions.
+        The right to object to processing - You have the right to object to our processing of your personal data, under certain conditions.
+        The right to data portability - You have the right to request that we transfer the data that we have collected to another organization, or directly to you, under certain conditions.
+        If you make a request, we have one month to respond to you. If you would like to exercise any of these rights, please contact us by email (afkpost@gmail.com).
+      `
+    },
+    children: {
+      title: "Children's Information",
+      body: `
+        Another part of our priority is adding protection for children while using the internet. We encourage parents and guardians to observe, participate in, and/or monitor and guide their online activity.
+        WeWish does not knowingly collect any Personal Identifiable Information from children under the age of 13. If you think that your child provided this kind of information on our website, we strongly encourage you to contact us immediately and we will do our best efforts to promptly remove such information from our records.
+      `
+    }
   }
 };
