@@ -1,54 +1,43 @@
 import * as Models from './Models';
-import { IonModal, IonToolbar, IonTitle, IonButtons, IonIcon, IonButton, IonContent, IonList, IonItem, IonLabel } from '@ionic/react';
-import { Id } from '../Utils';
-import { WithTranslation } from '../Localization';
-import { close, checkmark } from 'ionicons/icons';
-import { useState } from 'react';
+import { IonTitle, IonButtons, IonIcon, IonButton, IonContent, IonList, IonItem, IonLabel } from '@ionic/react';
+import { useTranslation } from '../Localization';
+import { closeSharp, checkmarkSharp } from 'ionicons/icons';
+import { FC } from 'react';
+import { Modal } from '../Controls/Modal';
 
 type Props = {
-  isOpen: boolean
-  onClose: () => void,
   onAccept: (uid: string) => Promise<void>
   onReject: (uid: string) => Promise<void>
   accessRequests: ReadonlyArray<Models.AccessRequest>
 }
 
-export const AccessRequests =
-  WithTranslation(({ isOpen, onClose, translation, accessRequests, onAccept, onReject }: Props & WithTranslation) => {
-    const [titleId] = useState(Id);
-    const { wishlist } = translation;
+export const AccessRequests: FC<Props> = ({
+  onAccept,
+  onReject,
+  accessRequests
+}) => {
+    const { wishlist, utils } = useTranslation()
     return (
-      <IonModal
-        isOpen={isOpen}
-        onDidDismiss={onClose}
-        aria-labelledby={titleId}
+      <Modal
+        id='access-requests' 
+        header={<IonTitle>{wishlist['access-requests']}</IonTitle>}
       >
-        <IonToolbar color='secondary'>
-          <IonTitle id={titleId}>{wishlist['access-requests']}</IonTitle>
-
-          <IonButtons slot='secondary'>
-            <IonButton onClick={onClose}>
-              <IonIcon slot='icon-only' icon={close} />
-            </IonButton>
-          </IonButtons>
-        </IonToolbar>
-
         <IonContent>
           <IonList>{accessRequests.map(request =>
             <IonItem key={request.id}>
-              <IonLabel>{request.name}</IonLabel>
+              <IonLabel>{request.name ?? utils.noname}</IonLabel>
               <IonButtons slot='end'>
                 <IonButton onClick={() => onReject(request.id)}>
                   <IonIcon
                     slot='icon-only'
-                    icon={close}
+                    icon={closeSharp}
                     color='danger'
                   />
                 </IonButton>
                 <IonButton onClick={() => onAccept(request.id)}>
                   <IonIcon
                     slot='icon-only'
-                    icon={checkmark}
+                    icon={checkmarkSharp}
                     color='success'
                   />
                 </IonButton>
@@ -56,6 +45,6 @@ export const AccessRequests =
             </IonItem>)
           }</IonList>
         </IonContent>
-      </IonModal>
-    );
-  })
+      </Modal>
+    )
+}

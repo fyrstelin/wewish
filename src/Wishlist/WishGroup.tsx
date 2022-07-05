@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { WishItem } from './WishItem';
 import * as Models from './Models';
 import { IonItemGroup, IonItemDivider, IonLabel, IonButton, IonIcon } from '@ionic/react';
-import { add, remove } from 'ionicons/icons';
+import { addSharp, removeSharp } from 'ionicons/icons';
 
 type Props = {
   wishlistId: string
@@ -16,9 +16,9 @@ type Props = {
 type State = 'all' | 'none' | 'interesting';
 
 const icons = {
-  all: add,
-  none: remove,
-  interesting: add
+  all: addSharp,
+  none: removeSharp,
+  interesting: addSharp
 };
 
 export const WishGroup = ({ category, wishes, onMarkAsBought, onMarkAsUnbought, userId, onDeleteWish, wishlistId }: Props) => {
@@ -44,12 +44,11 @@ export const WishGroup = ({ category, wishes, onMarkAsBought, onMarkAsUnbought, 
     return 'none';
   })();
 
-  const icon = category[0] || '';
   return <IonItemGroup class='wish-group'>
     <IonItemDivider color='light' sticky>
       <IonLabel>{category}</IonLabel>
       <IonButton slot='end' fill='clear' color='medium' onClick={() => setState(nextState)}>
-        <IonIcon slot='icon-only' icon={icons[nextState]} />
+        <IonIcon icon={icons[nextState]} />
         {nextState === 'all' &&
           <div className='counter'>{uninterestingWishes.length}</div>
         }
@@ -57,11 +56,9 @@ export const WishGroup = ({ category, wishes, onMarkAsBought, onMarkAsUnbought, 
     </IonItemDivider>
     {state !== 'none' && interestingWishes
       .sort((a, b) => a.name.localeCompare(b.name))
-      .map((wish, i) =>
+      .map((wish) =>
         <WishItem
           key={wish.id}
-          wishlistId={wishlistId}
-          icon={icon}
           wish={wish}
           onMarkAsBought={onMarkAsBought}
           onMarkAsUnbought={onMarkAsUnbought}
@@ -75,8 +72,6 @@ export const WishGroup = ({ category, wishes, onMarkAsBought, onMarkAsUnbought, 
         <WishItem
           uninteresting
           key={wish.id}
-          wishlistId={wishlistId}
-          icon={icon}
           wish={wish}
           onMarkAsBought={onMarkAsBought}
           onMarkAsUnbought={onMarkAsUnbought}

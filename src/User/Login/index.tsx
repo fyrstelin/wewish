@@ -7,22 +7,22 @@ import { AuthProvider, signInWithPopup, signInWithRedirect, FacebookAuthProvider
 import { useToaster } from '../../Controls/Toaster';
 import { usePopupManager } from '../../Controls/Popups';
 import { Link } from 'react-router-dom';
-import { IonContent, IonSpinner, IonButton, IonInput, IonItem, IonLabel, IonList, IonTitle } from '@ionic/react';
+import { IonContent, IonSpinner, IonButton, IonInput, IonItem, IonLabel, IonList, IonTitle, IonHeader, IonToolbar, IonButtons, IonIcon } from '@ionic/react';
 import { InputChangeEventDetail } from '@ionic/core';
-import { Modal } from '../../Controls/Modal';
-import { useHashController } from '../../Utils/Hash';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { ref, set } from 'firebase/database';
+import { useHash } from '../../Utils/Hash';
+import { closeSharp } from 'ionicons/icons';
 
 const browser = detect();
 
-type Input = {
+type InputProps = {
   label: string
   value: string
   onChange: (e: CustomEvent<InputChangeEventDetail>) => void
   type?: 'email' | 'password'
 };
-const Input = ({ label, value, onChange, type }: Input) => <IonItem>
+const Input = ({ label, value, onChange, type }: InputProps) => <IonItem>
   <IonLabel position='floating'>{label}</IonLabel>
   <IonInput value={value} onIonChange={onChange} type={type} />
 </IonItem>
@@ -31,18 +31,16 @@ type Props = {
   onLogin: () => void
 }
 
-
 export const Login: FC<Props> = ({ onLogin }) => {
+  const [emailStep, setEmailStep] = useHash<'input' | 'register' | 'password'>('step')
   const { login, errors } = useTranslation()
   const popupManager = usePopupManager()
   const toaster = useToaster()
   const auth = useAuth()
-  const hashController = useHashController()
   const db = useDatabase()
 
   const [loading, setLoading] = useState(false)
   const [emailState, setEmailState] = useState({
-    step: 'input' as 'input' | 'register' | 'password',
     email: '',
     password: '',
     name: ''
@@ -96,7 +94,7 @@ export const Login: FC<Props> = ({ onLogin }) => {
   }
 
   const signInWithEmail = async () => {
-    hashController.remove('modal');
+    setEmailStep(undefined)
     setLoading(true)
     try {
       await signInWithEmailAndPassword(auth, emailState.email, emailState.password);
@@ -139,10 +137,7 @@ export const Login: FC<Props> = ({ onLogin }) => {
     try {
       await sendPasswordResetEmail(auth, emailState.email);
 
-      setEmailState(state => ({
-        ...state,
-        step: 'input'
-      }));
+      setEmailStep('input')
     } catch (e: any) {
       toaster.next({
         message: (errors as any)[e.code] || e.message,
@@ -154,22 +149,12 @@ export const Login: FC<Props> = ({ onLogin }) => {
   }
 
   const beginEmailSignin = () => {
-    setEmailState(state => ({
-      ...state,
-      step: 'input',
-    }));
-    hashController.set('modal', 'sign-in-with-email');
+    setEmailStep('input')
   }
 
-  const beginRegisterUser = () => setEmailState(state => ({
-    ...state,
-    step: 'register',
-  }));
+  const beginRegisterUser = () => setEmailStep('register')
 
-  const beginResetPassword = () => setEmailState(state => ({
-    ...state,
-    step: 'password',
-  }));
+  const beginResetPassword = () => setEmailStep('password')
 
   const changeEmail = (e: CustomEvent<InputChangeEventDetail>) => {
     const email = e.detail.value;
@@ -199,13 +184,99 @@ export const Login: FC<Props> = ({ onLogin }) => {
     }
   }
 
-  const resetStep = () => setEmailState(state => ({
-    ...state,
-    step: 'input'
-  }))
+  return emailStep
+    ? <>
+      <IonHeader>
+        <IonToolbar color='secondary'>
+          <IonButtons slot='start'>
+            <IonButton onClick={() => window.history.back()}>
+              <IonIcon icon={closeSharp}/>
+            </IonButton>
+          </IonButtons>
+          <IonTitle>
+            {login['sign-in-with-email']}
+          </IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent>
+        <IonList inset>
+          {emailStep === 'register' &&
 
-  return (
-    <IonContent color='primary' class='login' fullscreen>
+            <Input
+              label={login.name}
+              value={emailState.name}
+              onChange={changeName}
+            />
+          }
+          <Input
+            label={login.email}
+            value={emailState.email}
+            onChange={changeEmail}
+            type='email'
+          />
+          {emailStep !== 'password' &&
+            <Input
+              label={login.password}
+              value={emailState.password}
+              onChange={changePassword}
+              type='password'
+            />
+          }
+        </IonList>
+        {emailStep === 'input' &&
+          <IonButton
+            fill='clear'
+            expand='full'
+            disabled={!(emailState.password && emailState.email)}
+            onClick={signInWithEmail}
+          >
+            {login['sign-in']}
+          </IonButton>
+        }
+        {emailStep === 'register' &&
+          <IonButton
+            expand='full'
+            fill='clear'
+            disabled={!(emailState.password && emailState.email && emailState.name)}
+            onClick={registerUser}
+          >
+            {login.register}
+          </IonButton>
+        }
+        {emailStep === 'password' &&
+          <IonButton
+            expand='full'
+            fill='clear'
+            disabled={!emailState.email}
+            onClick={resetPassword}
+          >
+            {login['reset-password']}
+          </IonButton>
+        }
+        {emailStep === 'input' &&
+          <>
+            <IonButton
+              fill='clear'
+              expand='full'
+              size='small'
+              onClick={beginRegisterUser}
+            >
+              {login['register-user']}
+            </IonButton>
+            <IonButton
+              fill='clear'
+              expand='full'
+              size='small'
+              onClick={beginResetPassword}
+            >
+              {login['forgot-password']}
+            </IonButton>
+          </>
+
+        }
+      </IonContent>
+    </>
+    : <IonContent color='primary' class='login' fullscreen>
       <h1>WeWish</h1>
       <h2 color='inherit'>{login.slogan}</h2>
       {loading
@@ -264,93 +335,5 @@ export const Login: FC<Props> = ({ onLogin }) => {
           </div>
         </div>
       }
-      <Modal
-        id='sign-in-with-email'
-        onDismiss={resetStep}
-        color='secondary'
-        header={
-          <IonTitle>
-            {login['sign-in-with-email']}
-          </IonTitle>
-        }
-      >
-        <IonContent>
-          <IonList inset>
-            {emailState.step === 'register' &&
-
-              <Input
-                label={login.name}
-                value={emailState.name}
-                onChange={changeName}
-              />
-            }
-            <Input
-              label={login.email}
-              value={emailState.email}
-              onChange={changeEmail}
-              type='email'
-            />
-            {emailState.step !== 'password' &&
-              <Input
-                label={login.password}
-                value={emailState.password}
-                onChange={changePassword}
-                type='password'
-              />
-            }
-          </IonList>
-          {emailState.step === 'input' &&
-            <IonButton
-              fill='clear'
-              expand='full'
-              disabled={!(emailState.password && emailState.email)}
-              onClick={signInWithEmail}
-            >
-              {login['sign-in']}
-            </IonButton>
-          }
-          {emailState.step === 'register' &&
-            <IonButton
-              expand='full'
-              fill='clear'
-              disabled={!(emailState.password && emailState.email && emailState.name)}
-              onClick={registerUser}
-            >
-              {login.register}
-            </IonButton>
-          }
-          {emailState.step === 'password' &&
-            <IonButton
-              expand='full'
-              fill='clear'
-              disabled={!emailState.email}
-              onClick={resetPassword}
-            >
-              {login['reset-password']}
-            </IonButton>
-          }
-          {emailState.step === 'input' &&
-            <>
-              <IonButton
-                fill='clear'
-                expand='full'
-                size='small'
-                onClick={beginRegisterUser}
-              >
-                {login['register-user']}
-              </IonButton>
-              <IonButton
-                fill='clear'
-                expand='full'
-                size='small'
-                onClick={beginResetPassword}
-              >
-                {login['forgot-password']}
-              </IonButton>
-            </>
-          }
-        </IonContent>
-      </Modal>
     </IonContent>
-  )
 }

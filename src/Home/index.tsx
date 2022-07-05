@@ -3,29 +3,31 @@ import { QueryHome } from './Provider';
 import { Home } from './Home';
 import { Process } from './Process';
 import { useStream } from '../Utils/useStream';
-import { Page } from '../Page';
-import { IonList } from '@ionic/react';
-import { Divider, Item } from '../Controls/Skeletons';
+import { IonContent, IonPage, IonTitle } from '@ionic/react';
+import { Header } from "../Controls/Header";
+import { Skeleton } from "./Skeleton";
+import { useAuth } from "../Firebase";
+import { Buttons } from "./Buttons";
 
 export const Root = () => {
   const home = useStream(QueryHome())
+  const auth = useAuth()
 
-  return home
-    ? <Api>
-      <Process uid={home.uid} />
-      <Home home={home} />
-    </Api>
-    : <Page title='WeWish'>
-      <IonList>
-        <Divider />
-        <Item />
-        <Item />
-        <Divider />
-        <Item />
-        <Item />
-        <Item />
-        <Item />
-        <Item />
-      </IonList>
-    </Page>
+  return (
+    <IonPage>
+      <Header>
+        <IonTitle>WeWish</IonTitle>
+        <Buttons onLogout={() => auth.signOut()}/>
+      </Header>
+      <IonContent>
+        { home
+          ? <Api>
+            <Process uid={home.uid} />
+            <Home home={home} />
+          </Api>
+          : <Skeleton/>
+        }
+      </IonContent>
+    </IonPage>
+  )
 }

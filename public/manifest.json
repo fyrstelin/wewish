@@ -1,12 +1,9 @@
 {
   "short_name": "WeWish",
   "name": "WeWish - Gift Coordinating Made Easy",
+  "description": "Gift Coordinating Made Easy",
+  "id": "/",
   "icons": [
-    {
-      "src": "favicon.ico",
-      "sizes": "64x64",
-      "type": "image/x-icon"
-    },
     {
       "src": "logo-256.png",
       "sizes": "256x256",
@@ -25,6 +22,6 @@
   ],
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#512da8",
+  "theme_color": "#7200ca",
   "background_color": "#ffffff"
 }

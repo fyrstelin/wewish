@@ -1,8 +1,7 @@
-import { WithUser } from '../User/UserProvider';
-import { switchMap, map } from 'rxjs/operators';
-import { of } from 'rxjs';
-import { FirebaseComponent } from '../Firebase/FirebaseComponent';
-import { createContext, PropsWithChildren, PureComponent, ReactNode } from 'react';
+import { useUser } from '../User/UserProvider';
+import { map } from 'rxjs/operators';
+import { createContext, FC, PropsWithChildren, PureComponent, useEffect, useState } from 'react';
+import { useListen } from '../Firebase/Database';
 
 export type Skill
   = 'add-wish-list'
@@ -14,35 +13,33 @@ export type Skill
 const SkillsContext = createContext([] as ReadonlyArray<Skill>);
 const RequiresContext = createContext(undefined as Skill | undefined)
 
-type State = {
-  skills: ReadonlyArray<Skill>
+export const Skills: FC<PropsWithChildren> = ({ children }) => {
+  const { user } = useUser()
+  const listen = useListen()
+  const [skills, setSkills] = useState<ReadonlyArray<Skill>>([])
+
+
+  useEffect(() => {
+    if (!user) {
+      setSkills([])
+    } else {
+      const s = listen<Dictionary>(`users/${user.id}/skills`)
+        .pipe(
+          map(skills => Object.keys(skills || {}) as ReadonlyArray<Skill>)
+        )
+        .subscribe(setSkills)
+
+      return () => s.unsubscribe()
+    }
+  }, [user, listen])
+
+
+  return (
+    <SkillsContext.Provider value={skills}>
+      {children}
+    </SkillsContext.Provider>
+  )
 }
-
-
-export const Skills =
-  WithUser()(
-    class Skills extends FirebaseComponent<{ children: ReactNode } & WithUser, State> {
-      state: State = {
-        skills: []
-      }
-
-      setup() {
-        return this
-          .on(x => x.user ? x.user.id : null)
-          .pipe(switchMap(uid => !uid
-            ? of({ skills: [] as ReadonlyArray<Skill> })
-            : this.listen<Dictionary>(`users/${uid}/skills`)
-              .pipe(
-                map(skills => Object.keys(skills || {}) as ReadonlyArray<Skill>),
-                map(skills => ({ skills })))));
-      }
-
-      render() {
-        return <SkillsContext.Provider value={this.state.skills}>
-          {this.props.children}
-        </SkillsContext.Provider>
-      }
-    });
 
 type RequiresProps = {
   skills: ReadonlyArray<Skill>

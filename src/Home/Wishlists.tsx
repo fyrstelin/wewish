@@ -2,8 +2,7 @@ import { FC } from 'react';
 import * as Models from './Models';
 import format from 'dateformat';
 import { useTranslation } from '../Localization';
-import { IonList, IonLabel, IonItemDivider, IonItemGroup } from '@ionic/react';
-import { Item } from '../Controls/Item';
+import { IonList, IonLabel, IonItemDivider, IonItemGroup, IonItem } from '@ionic/react';
 
 type Props = {
   wishlists: ReadonlyArray<Models.Wishlist>
@@ -17,12 +16,12 @@ const oneMonthAgo = (() => {
 
 type Wishlist = { id: string, title: string, owners: ReadonlyArray<string> };
 const Wishlist = ({ id, title, owners }: Wishlist) =>
-  <Item href={`/wishlists/${id}`}>
+  <IonItem routerLink={`/wishlists/${id}`}>
     <IonLabel>
       <h2>{title}</h2>
       <p>{owners.slice().sort().join(', ')}</p>
     </IonLabel>
-  </Item>;
+  </IonItem>;
 
 export const Wishlists: FC<Props> = ({ wishlists }) => {
   const { home } = useTranslation()

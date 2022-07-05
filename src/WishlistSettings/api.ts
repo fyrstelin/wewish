@@ -3,9 +3,9 @@ import { Patch, Id } from '../Utils';
 import { useDatabase } from '../Firebase/Database'
 import { useFunction } from '../Firebase/Functions'
 import { useUser } from '../User/UserProvider'
-import { useNavigate } from 'react-router';
 import { useShare } from '../Utils/Share';
 import { ref, update } from 'firebase/database';
+import { useIonRouter } from '@ionic/react';
 
 export type WishlistUpdate = {
   title?: string
@@ -18,7 +18,7 @@ export const useApi = (id: string) => {
   const db = useDatabase()
   const resetWishlist = useFunction('resetWishlist')
   const { user } = useUser()
-  const navigate = useNavigate()
+  const router = useIonRouter()
   const share = useShare()
 
   return {
@@ -37,7 +37,7 @@ export const useApi = (id: string) => {
         [`/wishlists/${id}/members/${userId}`]: null,
         [`/users/${userId}/wishlists/${id}`]: null
       });
-      navigate('/', { replace: true })
+      router.push('/', 'root', 'replace')
     },
 
     addCoOwner: async () => {
@@ -45,16 +45,16 @@ export const useApi = (id: string) => {
       await update(ref(db), {
         [`/invites/${inviteId}`]: id
       });
-      share(`/invites/${id}`);
+      share(`/invites/${inviteId}`);
     },
 
     reset: async () => {
       await resetWishlist({ listId: id })
     },
 
-    removeMember: async (id: string) => {
+    removeMember: async (userId: string) => {
       await update(ref(db), {
-        [`/wishlists/${id}/members/${id}`]: null
+        [`/wishlists/${id}/members/${userId}`]: null
       });
     }
   }

@@ -1,9 +1,8 @@
-import { FC, useState, useRef, useLayoutEffect, MouseEvent } from 'react';
+import { FC, useState, useRef, MouseEvent } from 'react';
 import { useUser } from '../User/UserProvider';
 import { useTranslation } from '../Localization';
-import { IonButton, IonIcon, IonPopover, IonList, IonContent, IonLabel } from '@ionic/react';
-import { Item } from '../Controls/Item';
-import { person, settings, exit, informationCircle } from 'ionicons/icons';
+import { IonButton, IonIcon, IonPopover, IonList, IonContent, IonLabel, IonItem, IonButtons } from '@ionic/react';
+import { personSharp, settingsSharp, exitSharp, informationSharp } from 'ionicons/icons';
 
 type Props = {
   onLogout: () => void
@@ -16,17 +15,8 @@ export const Buttons: FC<Props> = ({ onLogout }) => {
   const [event, setEvent] = useState<Event>()
 
   const popoverRef = useRef<HTMLIonPopoverElement | null>(null)
-  const mountedRef = useRef(true)
-
-  useLayoutEffect(() => () => {
-    mountedRef.current = false
-    popoverRef.current?.dismiss()
-  }, [])
 
   const closeMenu = () => {
-    if (!mountedRef.current) {
-      return;
-    }
     setEvent(undefined)
   };
 
@@ -36,36 +26,37 @@ export const Buttons: FC<Props> = ({ onLogout }) => {
   };
 
   return (
-    user && <>
-      <IonButton
-        onClick={openMenu}
-      >
-        <IonIcon icon={person} />
+    user && <IonButtons slot='end'>
+      <IonButton onClick={openMenu}>
+        <IonIcon icon={personSharp} slot='icon-only'/>
       </IonButton>
       <IonPopover
         ref={popoverRef}
         isOpen={!!event}
-        onDidDismiss={closeMenu}
+        onWillDismiss={closeMenu}
         event={event}
         showBackdrop={false}
       >
         <IonContent>
           <IonList lines='none'>
-            <Item href='/user-settings' detail={false}>
-              <IonIcon icon={settings} slot='start' />
+            <IonItem routerLink='/user-settings' detail={false} onClick={closeMenu}>
+              <IonIcon icon={settingsSharp} slot='start' />
               <IonLabel>{home.settings}</IonLabel>
-            </Item>
-            <Item href='/about' detail={false}>
-              <IonIcon icon={informationCircle} slot='start' />
+            </IonItem>
+            <IonItem routerLink='/about' detail={false} onClick={closeMenu}>
+              <IonIcon icon={informationSharp} slot='start' />
               <IonLabel>{home.about}</IonLabel>
-            </Item>
-            <Item onClick={onLogout}>
-              <IonIcon icon={exit} slot='start' />
+            </IonItem>
+            <IonItem onClick={() => {
+              closeMenu()
+              onLogout()
+            }}>
+              <IonIcon icon={exitSharp} slot='start' />
               <IonLabel>{home['sign-out']}</IonLabel>
-            </Item>
+            </IonItem>
           </IonList>
         </IonContent>
       </IonPopover>
-    </>
+    </IonButtons>
   )
 }

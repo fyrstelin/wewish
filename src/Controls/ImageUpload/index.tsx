@@ -1,7 +1,7 @@
 import './styles.css';
 import { ImagePreview } from '../ImagePreview';
 import { IonFab, IonFabButton, IonIcon } from '@ionic/react';
-import { camera } from 'ionicons/icons'
+import { cameraSharp } from 'ionicons/icons'
 import { PureComponent } from 'react';
 
 type Props = {
@@ -24,7 +24,7 @@ export class ImageUpload extends PureComponent<Props, State> {
       <ImagePreview className='image-upload' height={140} image={image}>
         <IonFab horizontal='end' vertical='bottom'>
           <IonFabButton disabled={!!message} color='primary' onClick={this.chooseFile}>
-            <IonIcon icon={camera} />
+            <IonIcon icon={cameraSharp} />
           </IonFabButton>
         </IonFab>
         <input

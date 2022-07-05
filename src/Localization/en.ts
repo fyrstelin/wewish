@@ -57,13 +57,14 @@ export const Lang: Translation = {
     }
   },
   utils: {
+    noname: 'No name',
     share: {
       'link-copied': 'Link copied to clipboard'
     }
   },
   wishlistSettings: {
     'page-title': 'Wish list settings',
-    'title': 'title',
+    'title': 'Title',
     'theme-color': 'Color',
     'delete-wishlist': {
       'popup-title': 'Delete wishlist',

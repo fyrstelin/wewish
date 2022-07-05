@@ -3,7 +3,7 @@ import { Localize, defaultLang } from './index';
 import { FirebaseProvider, useAuth } from '../Firebase';
 import { switchMap, map } from 'rxjs/operators'
 import { of } from 'rxjs';
-import { FC, PropsWithChildren, ReactNode } from 'react';
+import { FC, PropsWithChildren, ReactNode, useEffect, useState } from 'react';
 
 type Props = {
   uid: string | null
@@ -31,9 +31,16 @@ class Provider extends FirebaseProvider<Props, State> {
 }
 
 export const FirebaseLocalization: FC<PropsWithChildren> = ({ children }) => {
-  const { currentUser } = useAuth()
+  const auth = useAuth()
 
-  return <Provider uid={currentUser && currentUser.uid} render={({ lang }) =>
+  const [uid, setUid] = useState<string | null>(null)
+
+  useEffect(() => {
+    setUid(null)
+    return auth.onAuthStateChanged(user => setUid(user?.uid ?? null))
+  }, [auth])
+
+  return <Provider uid={uid} render={({ lang }) =>
     <Localize lang={lang}>
       {children}
     </Localize>

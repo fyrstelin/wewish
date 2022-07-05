@@ -28,10 +28,6 @@ export const pushToFactory = (app: admin.app.App) => async (userIds: ReadonlyArr
     });
 
     await Promise.all(response.results
-        .map(x => {
-            console.log(x);
-            return x;
-        })
         .map((result, i) => ({ result, user: users[i]}))
         .map(({ result, user }) => result.error && [
             'messaging/invalid-registration-token',

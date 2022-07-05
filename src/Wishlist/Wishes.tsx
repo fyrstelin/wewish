@@ -1,8 +1,8 @@
 import * as Models from './Models';
 import { WishGroup } from './WishGroup';
-import { WithUser } from '../User/UserProvider';
+import { useUser } from '../User/UserProvider';
 import { IonList } from '@ionic/react';
-import { PureComponent } from 'react';
+import { FC } from 'react';
 
 type Props = {
   wishlistId: string
@@ -12,39 +12,33 @@ type Props = {
   onDeleteWish: (wish: Models.Wish) => void
 }
 
-export const Wishes =
-  WithUser()(
-    class Wishes extends PureComponent<Props & WithUser> {
-      render() {
-        const { wishes, onMarkAsBought, onMarkAsUnbought, user, onDeleteWish, wishlistId } = this.props;
+export const Wishes: FC<Props> = ({ wishes, onMarkAsBought, onMarkAsUnbought, onDeleteWish, wishlistId }) => {
+  const { user } = useUser()
+  const grouped = wishes.reduce((group, wish) => {
+    const category = (wish.category || '').toLocaleUpperCase().trim();
+    return {
+      ...group,
+      [category]: [...(group[category] || []), wish]
+    };
+  }, {} as { [category: string]: Models.Wish[] });
 
-        const grouped = wishes.reduce((group, wish) => {
-          const category = (wish.category || '').toLocaleUpperCase().trim();
-          return {
-            ...group,
-            [category]: [...(group[category] || []), wish]
-          };
-        }, {} as { [category: string]: Models.Wish[] });
+  const categories = Object
+    .keys(grouped)
+    .sort();
 
-        const categories = Object
-          .keys(grouped)
-          .sort();
-
-        return (
-          <IonList>
-            {categories.map(category => <WishGroup
-              key={category}
-              wishlistId={wishlistId}
-              userId={user ? user.id : ''}
-              category={category}
-              wishes={grouped[category]}
-              onMarkAsBought={onMarkAsBought}
-              onMarkAsUnbought={onMarkAsUnbought}
-              onDeleteWish={onDeleteWish}
-            />
-            )}
-          </IonList>
-        );
-      }
-    }
-  );
+  return (
+    <IonList>
+      {categories.map(category => <WishGroup
+        key={category}
+        wishlistId={wishlistId}
+        userId={user ? user.id : ''}
+        category={category}
+        wishes={grouped[category]}
+        onMarkAsBought={onMarkAsBought}
+        onMarkAsUnbought={onMarkAsUnbought}
+        onDeleteWish={onDeleteWish}
+      />
+      )}
+    </IonList>
+  )
+}

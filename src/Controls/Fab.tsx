@@ -30,7 +30,7 @@ export const Fab =
           <>
             <IonFab onClick={onClick} vertical='bottom' horizontal='end' slot='fixed'>
               <IonFabButton>
-                <IonIcon icon={children} />
+                <IonIcon icon={children}/>
               </IonFabButton>
               {teaches
                 ? <Teaches skill={teaches}>

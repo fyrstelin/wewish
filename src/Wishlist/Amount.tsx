@@ -1,6 +1,6 @@
 import { WithTranslation } from '../Localization';
 import { IonLabel, IonButton, IonIcon, IonButtons } from '@ionic/react';
-import { remove, add, infinite } from 'ionicons/icons';
+import { removeSharp, addSharp, infiniteSharp } from 'ionicons/icons';
 import { PureComponent } from 'react';
 
 type TAmount = number | 'unlimited';
@@ -55,14 +55,14 @@ export const Amount =
               <IonButton
                 onClick={this.minusOne}
                 disabled={typeof (value) === 'string' || value === 1}>
-                <IonIcon slot='icon-only' icon={remove} />
+                <IonIcon slot='icon-only' icon={removeSharp} />
               </IonButton>
               <span>{this.format()}</span>
               <IonButton onClick={this.addOne}>
-                <IonIcon slot='icon-only' icon={add} />
+                <IonIcon slot='icon-only' icon={addSharp} />
               </IonButton>
               <IonButton onClick={this.unlimited}>
-                <IonIcon slot='icon-only' icon={infinite} />
+                <IonIcon slot='icon-only' icon={infiniteSharp} />
               </IonButton>
             </IonButtons>
           </>

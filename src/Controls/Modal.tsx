@@ -1,50 +1,75 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { FC, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { IonModal, IonToolbar, IonHeader, IonButtons, IonButton, IonIcon } from '@ionic/react';
 import { OverlayEventDetail } from '@ionic/core';
-import { WithHash, WithHashController } from '../Utils/Hash';
-import { close } from 'ionicons/icons';
+import { Hash, useHash, useHashController } from '../Utils/Hash';
+import { closeSharp } from 'ionicons/icons';
 
 type Props = {
-  id: string,
-  color?: string,
+  id: string
+  color?: 'primary' | 'secondary' | 'tertiary'
   header?: ReactNode
   children: ReactNode
   onDismiss?: () => void
 };
 
-export const Modal =
-  WithHashController(
-    WithHash(({ id, children, header, color, onDismiss, hash, hashController }: Props & WithHash & WithHashController) => {
+export const useModalController = (modal: string): [(args?: Hash) => void, () => void] => {
+  const hashController = useHashController()
 
-      const [initialized, setInitialized] = useState(false);
+  return [
+    useCallback((args: Hash = {}) => {
+      hashController.patch({
+        ...args,
+        modal
+      })
+    }, [hashController, modal]),
+    useCallback(() => {
+      window.history.back()
+    }, [])
+  ]
+}
 
-      const dismiss = (e: CustomEvent<OverlayEventDetail>) => {
-        if (e.detail.role) {
-          hashController.remove('modal');
-        }
-        if (onDismiss) {
-          onDismiss();
-        }
-      };
 
-      useEffect(() => {
-        setInitialized(true);
-      }, []);
+export const Modal: FC<Props> = ({ id, children, header, color, onDismiss }) => {
+  const [initialized, setInitialized] = useState(false);
+  const [openModalId] = useHash<string>('modal')
+  
+  // nasty hack
+  const blocked = useRef(false)
 
-      const closeFn = () => hashController.remove('modal');
-      return (
-        <IonModal isOpen={initialized && hash['modal'] === id} onDidDismiss={dismiss}>
-          <IonHeader>
-            <IonToolbar color={color}>
-              <IonButtons slot='start'>
-                <IonButton onClick={closeFn}>
-                  <IonIcon icon={close} />
-                </IonButton>
-              </IonButtons>
-              {header}
-            </IonToolbar>
-          </IonHeader>
-          {children}
-        </IonModal>
-      );
-    }));
+  const dismiss = (e: CustomEvent<OverlayEventDetail>) => {
+    if (blocked.current) {
+      return
+    }
+    if (e.detail.role) {
+      window.history.back()
+    }
+    if (onDismiss) {
+      onDismiss();
+    }
+
+    blocked.current = true
+    setTimeout(() => {
+      blocked.current = false
+    }, 100)
+  };
+
+  useEffect(() => {
+    setInitialized(true);
+  }, []);
+
+  return (
+    <IonModal isOpen={initialized && openModalId === id} onDidDismiss={dismiss}>
+      <IonHeader>
+        <IonToolbar color={color ?? 'secondary'}>
+          <IonButtons slot='start'>
+            <IonButton onClick={() => window.history.back()}>
+              <IonIcon icon={closeSharp} slot='icon-only'/>
+            </IonButton>
+          </IonButtons>
+          {header}
+        </IonToolbar>
+      </IonHeader>
+      {children}
+    </IonModal>
+  );
+}

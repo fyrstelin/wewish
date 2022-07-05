@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Provider } from './Provider';
+import { QueryUser } from './Provider';
 import { UserSettings, UserUpdate } from './UserSettings';
 import { Patch } from '../Utils';
 import { useAuth, useDatabase } from '../Firebase';
@@ -18,6 +18,11 @@ import {
 import { useToaster } from '../Controls/Toaster';
 import { useTranslation } from '../Localization';
 import { ref, update } from 'firebase/database';
+import { IonContent, IonPage, IonTitle } from '@ionic/react';
+import { Header } from '../Controls/Header';
+import { BackButton } from '../Controls/BackButton';
+import { useStream } from '../Utils/useStream';
+import { Loader } from '../Controls/Loader';
 
 const browser = detect();
 
@@ -31,6 +36,8 @@ export const Root = () => {
   const db = useDatabase()
   const translation = useTranslation()
   const toaster = useToaster()
+  
+  const user = useStream(QueryUser())
 
   const [updateCount, setUpdateCount] = useState(0)
 
@@ -87,13 +94,25 @@ export const Root = () => {
   }
 
   return (
-    <Provider render={user =>
-      <UserSettings user={user}
-        onSave={save}
-        onResetTutorial={resetTutorial}
-        onConnect={connect}
-        onDisconnect={disconnect}
-      />
-    } />
+    <IonPage>
+      <Header>
+        <BackButton>/</BackButton>
+        <IonTitle>
+          {translation.userSettings['page-title']}
+        </IonTitle>
+      </Header>
+      <IonContent>
+        { user
+          ? <UserSettings user={user}
+            onSave={save}
+            onResetTutorial={resetTutorial}
+            onConnect={connect}
+            onDisconnect={disconnect}
+          />
+          : <Loader/>
+        }
+      </IonContent>
+    </IonPage>
+    
   );
 }

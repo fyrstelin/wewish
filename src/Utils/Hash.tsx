@@ -1,110 +1,83 @@
-import { ComponentType, createContext, PropsWithChildren, PureComponent } from "react";
+import { createContext, FC, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useHistory } from "react-router";
 
-const context = createContext<Dictionary<string | true>>({});
+type Value = string | true | undefined
+type WritableHash = Record<string, Value>
+export type Hash = Readonly<WritableHash>
 
-export type WithHash = {
-  hash: Dictionary<string | true>
-}
-export function WithHash<TProps>(C: ComponentType<TProps & WithHash>) {
-  return (props: TProps) => <context.Consumer>{hash =>
-    <C hash={hash} {...props} />
-  }</context.Consumer>
-}
-
-type State = {
-  hash: Dictionary<string | true>
+type Context = {
+  hash: Record<string, Value>
+  patch: (hash: Hash) => void
 }
 
-const deserialize = (hash: string) => (hash && hash.substring(1))
+const context = createContext<Context>({
+  hash: {},
+  patch: () => null
+})
+
+const parse = (hash: string): Hash => hash.slice(1)
   .split('&')
-  .filter(x => !!x)
-  .map(x => x.split('='))
-  .reduce((acc, [key, value]) => ({
-    ...acc,
-    [decodeURIComponent(key)]: value === undefined || decodeURIComponent(value)
-  }), {} as Dictionary<string | true>)
+  .map(arg => arg.split('=').map(e => decodeURIComponent(e)))
+  .reduce((acc, [key, value]) => {
+    acc[key] = value === undefined ? true : value;
+    return acc;
+  }, {} as WritableHash)
 
-const serialize = (hash: Dictionary<string | true | undefined>) =>
-  Object.keys(hash)
-    .map(key => ({ key, value: hash[key] }))
-    .filter(({ value }) => value !== undefined)
-    .map(({ key, value }) => ({
-      key: encodeURIComponent(key),
-      value: value === true ? undefined : encodeURIComponent(value!)
-    }))
-    .map(({ key, value }) => value === undefined
-      ? key
-      : `${key}=${value}`)
-    .join('&')
+const stringify = (hash: Hash): string => Object.entries(hash)
+  .map(([key, value]) => {
+    switch (value) {
+      case undefined: return []
+      case true: return [key]
+      default: return [key, value]
+    }
+  })
+  .map(args => args.map(e => encodeURIComponent(e)).join('='))
+  .filter(Boolean)
+  .join('&')
 
-type HashController = {
-  set: (key: string, value?: string | true) => void
-  remove: (key: string) => void
-}
-const HashController: HashController = (() => {
-  const history: string[] = [];
-  return {
-    set: (key: string, value?: string | true) => {
-      history.push(key);
-      window.location.hash = serialize({
-        ...deserialize(window.location.hash),
-        [key]: value === undefined ? true : value
-      })
-    },
-    remove: (key: string) => {
-      if (history.length === 0) {
-        const hash = serialize({
-          ...deserialize(window.location.hash),
-          [key]: undefined
-        });
-        console.log(key, hash);
-        window.location.replace(window.location.href.split('#')[0] + '#' + hash);
-      } else if (history[history.length - 1] === key) {
-        history.pop();
-        window.history.back();
-      } else {
-        history.push(key);
-        window.location.hash = serialize({
-          ...deserialize(window.location.hash),
-          [key]: undefined
-        })
+export const HashController: FC<PropsWithChildren> = ({
+  children
+}) => {
+  const history = useHistory()
+  const [hash, setHash] = useState<Record<string, Value>>(parse(history.location.hash))
+
+  useEffect(() => {
+    let currentHash = history.location.hash
+
+    return history.listen(e => {
+      if (e.hash === currentHash) {
+        return
       }
+      currentHash = e.hash
+
+      setHash(parse(currentHash))
+    })
+  }, [history])
+
+  const value = useMemo<Context>(() => ({
+    hash,
+    patch: (patch) => {
+      const newHash = stringify({
+        ...hash,
+        ...patch
+      })
+      window.location.hash = newHash;
     }
-  }
-})();
-
-export const useHashController = () => HashController
-
-export type WithHashController = { hashController: HashController }
-export function WithHashController<TProps>(C: ComponentType<TProps & WithHashController>) {
-  return (props: TProps) => <C hashController={HashController} {...props} />
+  }), [hash])
+  
+  return <context.Provider value={value}>
+    {children}
+  </context.Provider>
 }
 
-export class Hash extends PureComponent<PropsWithChildren, State> {
-  state: State = {
-    hash: {}
-  }
-
-  constructor(props: {}) {
-    super(props);
-    this.state = {
-      hash: deserialize(window.location.hash)
-    }
-    window.addEventListener('hashchange', this.hashChanged);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('hashchange', this.hashChanged);
-  }
-
-  private hashChanged = () => {
-    const hash = deserialize(window.location.hash);
-    this.setState({ hash });
-  }
-
-  render() {
-    return <context.Provider value={this.state.hash}>
-      {this.props.children}
-    </context.Provider>
-  }
+export const useHashController = () => useContext(context)
+export const useHash = <TValue extends Value = Value>(key: string): [TValue | undefined, (value: TValue | undefined) => void] => {
+  const ctrl = useHashController()
+  const set = useCallback((value: TValue | undefined) => {
+    ctrl.patch({ [key]: value });
+  }, [ctrl, key])
+  return [
+    ctrl.hash[key] as TValue,
+    set
+  ]
 }

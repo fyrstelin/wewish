@@ -1,7 +1,7 @@
 import { WithTranslation } from '../Localization';
 import { IonLabel, IonRange, IonIcon, IonButtons, IonButton } from '@ionic/react';
 import { RangeChangeEventDetail } from '@ionic/core';
-import { logoEuro } from 'ionicons/icons';
+import { closeSharp, logoEuro } from 'ionicons/icons';
 import { PureComponent } from 'react';
 
 type SimplePrice = null | 1 | 2 | 3;
@@ -64,7 +64,7 @@ export const Price =
             </IonRange>
             <IonButtons slot='end'>
               <IonButton onClick={this.reset}>
-                <IonIcon icon='close' />
+                <IonIcon icon={closeSharp} slot='icon-only'/>
               </IonButton>
             </IonButtons>
           </>

@@ -57,6 +57,7 @@ export const Lang: Translation = {
     }
   },
   utils: {
+    noname: 'Intet navn',
     share: {
       'link-copied': 'Link kopieret til udklipsholder'
     }

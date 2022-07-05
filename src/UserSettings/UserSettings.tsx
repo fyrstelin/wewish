@@ -1,5 +1,4 @@
 import * as Models from './Models';
-import { Page } from '../Page';
 import * as StringInput from '../Controls/StringInput';
 import * as SelectInput from '../Controls/SelectInput';
 import { Lang, supportedLangs, WithTranslation } from '../Localization';
@@ -137,16 +136,7 @@ export const UserSettings =
           const { providers } = user;
 
           return (
-            <Page
-              title={userSettings['page-title']}
-              parent='/'
-            >
-              <IonPopover isOpen={dialog === 'connect-password'} onDidDismiss={this.abortConnectPassord}>
-                <ConnectPassword
-                  email={user.email}
-                  onConnect={this.completeConnectPassword}
-                />
-              </IonPopover>
+            <>
               <IonList lines='none'>
                 <IonItem>
                   <StringInput.StringInput
@@ -218,7 +208,14 @@ export const UserSettings =
                   <IonLabel>{userSettings['reset-tutorial']}</IonLabel>
                 </IonItem>
               </IonList>
-            </Page>
+
+              <IonPopover isOpen={dialog === 'connect-password'} onDidDismiss={this.abortConnectPassord}>
+                <ConnectPassword
+                  email={user.email}
+                  onConnect={this.completeConnectPassword}
+                />
+              </IonPopover>
+            </>
           );
         }
       }));

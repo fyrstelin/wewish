@@ -1,6 +1,6 @@
 import { FC, useState, useEffect, VFC, PropsWithChildren } from 'react';
 import * as Models from './Models';
-import { IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonContent, IonList, IonItem, IonLabel, IonInput, IonCheckbox } from '@ionic/react';
+import { IonTitle, IonButtons, IonButton, IonIcon, IonList, IonItem, IonLabel, IonInput, IonCheckbox } from '@ionic/react';
 import { useTranslation } from '../Localization';
 import { ImageUpload } from '../Controls/ImageUpload';
 import * as StringInput from '../Controls/StringInput';
@@ -8,8 +8,9 @@ import * as Price from './Price';
 import * as Amount from './Amount';
 import { ImagePreview } from '../Controls/ImagePreview';
 import { useUser } from '../User/UserProvider';
-import { logoEuro, remove, add, close, save as saveIcon, link, contract, expand, trash } from 'ionicons/icons';
+import { logoEuro, removeSharp, addSharp, saveSharp, linkSharp, contractSharp, expandSharp, trashSharp } from 'ionicons/icons';
 import { usePopupManager } from '../Controls/Popups';
+import { Modal } from '../Controls/Modal';
 
 export type WishUpdate = {
   name?: string
@@ -69,12 +70,12 @@ const AmountSelector: VFC<{
 
   return (
     <IonButtons slot='end'>
-      <IonButton fill='clear' onClick={desc} disabled={amount <= 0}>
-        <IonIcon icon={remove} />
+      <IonButton fill='clear' onClick={desc} disabled={amount <= 0} >
+        <IonIcon icon={removeSharp} slot='icon-only' />
       </IonButton>
       {amount}
       <IonButton fill='clear' onClick={inc} disabled={amount >= max}>
-        <IonIcon icon={add} />
+        <IonIcon icon={addSharp} slot='icon-only' />
       </IonButton>
     </IonButtons>
   );
@@ -87,13 +88,8 @@ export const Wish: FC<Props> = ({ wish, onClose, isOwner, onUploadImage, onDelet
   const popupManager = usePopupManager()
 
   const [state, setState] = useState<WishState>()
-  const [task, setTask] = useState<'saving' | 'uploadind'>()
-  const [initialized, setInitialized] = useState<true>()
+  const [task, setTask] = useState<'saving' | 'uploading'>()
   const [expanded, setExpanded] = useState(false)
-
-  useEffect(() => {
-    setTimeout(() => setInitialized(true))
-  }, [])
 
   useEffect(() => setExpanded(false), [wishId])
 
@@ -197,142 +193,134 @@ export const Wish: FC<Props> = ({ wish, onClose, isOwner, onUploadImage, onDelet
   const toggleExpanded = () => setExpanded(!expanded)
 
   return (
-    <IonModal isOpen={!!initialized && !!wish} onDidDismiss={onClose} backdropDismiss={!task}>
-      {wish && <>
-        <IonHeader>
-          <IonToolbar color='secondary'>
-            <IonButtons slot='start'>
-              <IonButton onClick={onClose} disabled={!!task}>
-                <IonIcon icon={close} />
+    <Modal
+      id='wish'
+      color='secondary'
+      header={wish && <>
+        <IonTitle>
+          {!isOwner && wish.amount !== 'unlimited' && wish.amount !== 1 &&
+            <>{wish.amount}x </>
+          }
+          {wish.name}
+        </IonTitle>
+        <IonButtons slot='end'>
+          {isOwner &&
+            <>
+              <IonButton onClick={deleteWish}>
+                <IonIcon icon={trashSharp} slot='icon-only' />
               </IonButton>
-            </IonButtons>
-            <IonTitle>
-              {!isOwner && wish.amount !== 'unlimited' && wish.amount !== 1 &&
-                <>{wish.amount}x </>
-              }
-              {wish.name}
-            </IonTitle>
-            <IonButtons slot='end'>
-              {isOwner &&
-                <>
-                  <IonButton onClick={deleteWish}>
-                    <IonIcon icon={trash} />
-                  </IonButton>
-                  <IonButton onClick={save} disabled={!isDirty || task === 'saving'}>
-                    <IonIcon icon={saveIcon} />
-                  </IonButton>
-                </>
-              }
-              {(!isOwner && wish.url) &&
-                <IonButton href={wish.url}>
-                  <IonIcon icon={link} />
-                </IonButton>
-              }
-            </IonButtons>
-          </IonToolbar>
-        </IonHeader>
-        <IonContent fullscreen>
-          {isOwner && state
-            ? <>
-              <ImageUpload
-                image={wish.imageUrl}
-                onUpload={onUploadImage}
-              />
-              <IonList>
-                <IonItem>
-                  <StringInput.StringInput
-                    label={translation.wish.name}
-                    model={state.name}
-                    onChange={setName}
-                  />
-                </IonItem>
-                <IonItem>
-                  <StringInput.StringInput
-                    label={translation.wish.category}
-                    model={state.category}
-                    onChange={setCategory}
-                  />
-                </IonItem>
-                <IonItem>
-                  <StringInput.StringInput
-                    label={translation.wish.link}
-                    placeholder={translation.wish.linkPlaceholder}
-                    model={state.url}
-                    onChange={setUrl}
-                  />
-                </IonItem>
-                <IonItem>
-                  <Price.Price
-                    model={state.price}
-                    onChange={setPrice}
-                  />
-                </IonItem>
-                <IonItem>
-                  <Amount.Amount
-                    model={state.amount}
-                    onChange={setAmount}
-                  />
-                </IonItem>
-                <IonItem>
-                  <StringInput.StringInput
-                    type='multiline'
-                    label={translation.wish.description}
-                    model={state.description}
-                    onChange={setDescription}
-                  />
-                </IonItem>
-              </IonList>
-            </>
-            : <>
-              {wish.imageUrl &&
-                <ImagePreview
-                  image={wish.imageUrl}
-                  height={expanded ? '100%' : 140}
-                >
-                  <IonButton onClick={toggleExpanded} class='wish__expand_image' size='small'>
-                    <IonIcon icon={expanded ? contract : expand} />
-                  </IonButton>
-                </ImagePreview>
-              }
-              <IonItem lines='none'>
-                {wish.name}
-              </IonItem>
-              {wish.description && <IonItem lines='none'>
-                <i>{wish.description}</i>
-              </IonItem>}
-              <IonList>
-                <Item label={translation.wish.category}>
-                  {wish.category}
-                </Item>
-                {wish.price &&
-                  <IonItem>
-                    <IonLabel color='medium'>{translation.wish.price}</IonLabel>
-                    <PriceLabel>{wish.price}</PriceLabel>
-                  </IonItem>
-                }
-                <IonItem>
-                  <IonLabel color='medium'>
-                    {translation.wish.bought}
-                  </IonLabel>
-                  {
-                    wish.amount === 'unlimited' || wish.amount === 1
-                      ? <IonCheckbox
-                        slot='end'
-                        checked={bought > 0}
-                        onIonChange={boughtChanged}
-                      />
-                      : <AmountSelector
-                        max={wish.amount - boughtByOthers}
-                        amount={bought}
-                        onChange={markAsBought}
-                      />
-                  }
-                </IonItem>
-              </IonList>
+              <IonButton onClick={save} disabled={!isDirty || task === 'saving'}>
+                <IonIcon icon={saveSharp} slot='icon-only' />
+              </IonButton>
             </>
           }
-        </IonContent>
+          {(!isOwner && wish.url) &&
+            <IonButton href={wish.url}>
+              <IonIcon icon={linkSharp} slot='icon-only' />
+            </IonButton>
+          }
+        </IonButtons>
       </>}
-    </IonModal>
+    >
+        {wish ? (isOwner && state
+          ? <>
+            <ImageUpload
+              image={wish.imageUrl}
+              onUpload={onUploadImage}
+            />
+            <IonList>
+              <IonItem>
+                <StringInput.StringInput
+                  label={translation.wish.name}
+                  model={state.name}
+                  onChange={setName}
+                />
+              </IonItem>
+              <IonItem>
+                <StringInput.StringInput
+                  label={translation.wish.category}
+                  model={state.category}
+                  onChange={setCategory}
+                />
+              </IonItem>
+              <IonItem>
+                <StringInput.StringInput
+                  label={translation.wish.link}
+                  placeholder={translation.wish.linkPlaceholder}
+                  model={state.url}
+                  onChange={setUrl}
+                />
+              </IonItem>
+              <IonItem>
+                <Price.Price
+                  model={state.price}
+                  onChange={setPrice}
+                />
+              </IonItem>
+              <IonItem>
+                <Amount.Amount
+                  model={state.amount}
+                  onChange={setAmount}
+                />
+              </IonItem>
+              <IonItem>
+                <StringInput.StringInput
+                  type='multiline'
+                  label={translation.wish.description}
+                  model={state.description}
+                  onChange={setDescription}
+                />
+              </IonItem>
+            </IonList>
+          </>
+          : <>
+            {wish.imageUrl &&
+              <ImagePreview
+                image={wish.imageUrl}
+                height={expanded ? '100%' : 140}
+              >
+                <IonButton onClick={toggleExpanded} class='wish__expand_image' size='small'>
+                  <IonIcon icon={expanded ? contractSharp : expandSharp} slot='icon-only' />
+                </IonButton>
+              </ImagePreview>
+            }
+            <IonItem lines='none'>
+              {wish.name}
+            </IonItem>
+            {wish.description && <IonItem lines='none'>
+              <i>{wish.description}</i>
+            </IonItem>}
+            <IonList>
+              <Item label={translation.wish.category}>
+                {wish.category}
+              </Item>
+              {wish.price &&
+                <IonItem>
+                  <IonLabel color='medium'>{translation.wish.price}</IonLabel>
+                  <PriceLabel>{wish.price}</PriceLabel>
+                </IonItem>
+              }
+              <IonItem>
+                <IonLabel color='medium'>
+                  {translation.wish.bought}
+                </IonLabel>
+                {
+                  wish.amount === 'unlimited' || wish.amount === 1
+                    ? <IonCheckbox
+                      slot='end'
+                      checked={bought > 0}
+                      onIonChange={boughtChanged}
+                    />
+                    : <AmountSelector
+                      max={wish.amount - boughtByOthers}
+                      amount={bought}
+                      onChange={markAsBought}
+                    />
+                }
+              </IonItem>
+            </IonList>
+          </>
+        ) : undefined}
+    </Modal>
   )
 }

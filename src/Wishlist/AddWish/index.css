@@ -2,6 +2,8 @@
     display: flex;
     position: relative;
     background-color: var(--ion-color-primary-tint);
+    padding-left: 8px;
+    padding-right: 8px;
 }
 
 .add-wish>ion-input.category {

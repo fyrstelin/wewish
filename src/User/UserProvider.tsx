@@ -1,9 +1,11 @@
-import { useState, useEffect, createContext, FC, useMemo, useContext, ComponentType, ReactNode, PropsWithChildren } from 'react';
+import { useState, useEffect, createContext, FC, useMemo, useContext, PropsWithChildren } from 'react';
 import { User, Provider } from '.';
 import * as Firebase from '../Firebase';
 import { Login } from './Login';
 import { useToaster } from '../Controls/Toaster';
 import { User as FirebaseUser } from 'firebase/auth'
+import { IonModal, useIonViewWillEnter } from '@ionic/react';
+import { useHistory } from 'react-router';
 
 type Task = {
   callback: () => void
@@ -30,6 +32,7 @@ const newUser = (user: FirebaseUser | null) => user
 export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
   const auth = Firebase.useAuth()
   const toaster = useToaster()
+  const router = useHistory()
 
   const [user, setUser] = useState<User | null>(newUser(auth.currentUser))
 
@@ -38,6 +41,12 @@ export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => auth.onAuthStateChanged(user => {
     setUser(newUser(user))
   }), [auth])
+
+  useEffect(() => router.listen(() => {
+    if (router.action === 'PUSH') {
+      setTask(undefined);
+    }
+  }), [router])
 
   const value = useMemo(() => ({
     user,
@@ -64,36 +73,26 @@ export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
     }
   }), [user, toaster, auth])
 
-  return task
-    ? <Login onLogin={task.callback} />
-    : <Context.Provider value={value}>
+  return (
+    <Context.Provider value={value}>
+      <IonModal isOpen={!!task} backdropDismiss={false}>
+        <Login onLogin={() => task?.callback()}/>
+      </IonModal>
       {children}
     </Context.Provider>
+  )
 }
-
-export type WithUser = { user: User | null, getUser: (message?: string) => Promise<User> };
-export function WithUser(login?: true) {
-  return function WithUser<TProps>(Component: ComponentType<TProps & WithUser>) {
-    return (props: TProps) =>
-      <OldUserprovider login={login}>{(user, getUser) =>
-        <Component user={user} getUser={getUser} {...props} />
-      }</OldUserprovider>;
-  }
-}
-
-const OldUserprovider: FC<{
-  login?: true,
-  children: (user: User | null, getUser: () => Promise<User>) => ReactNode
-}> = ({ login, children }) => {
-  const { user, getUser } = useUser(login)
-  return <>{children(user, getUser)}</>
-}
-
 
 export const useUser = (forceLogin?: true) => {
   const ctx = useContext(Context)
 
   useEffect(() => {
+    if (forceLogin) {
+      ctx.getUser()
+    }
+  }, [forceLogin, ctx])
+
+  useIonViewWillEnter(() => {
     if (forceLogin) {
       ctx.getUser()
     }

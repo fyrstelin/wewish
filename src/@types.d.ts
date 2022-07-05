@@ -93,6 +93,7 @@ type Translation = {
     }
   }
   utils: {
+    noname: string
     share: {
       'link-copied': string
     }

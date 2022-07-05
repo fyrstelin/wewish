@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { IonContent, IonButton, IonIcon, IonInput, IonHeader, IonToolbar, IonTitle, IonLoading } from "@ionic/react";
 import { Auth } from '../Firebase'
 import { AuthProvider, GoogleAuthProvider, FacebookAuthProvider } from 'firebase/auth';
+import { logoGoogle, logoFacebook} from 'ionicons/icons'
 import './index.css'
 
 export const Signin = () => {
@@ -48,10 +49,10 @@ export const Signin = () => {
 
       <div className='providers'>
         <IonButton fill='clear' onClick={signInWithProvider(new GoogleAuthProvider())}>
-          <IonIcon icon='logo-google' />
+          <IonIcon icon={logoGoogle} slot='icon-only'/>
         </IonButton>
         <IonButton fill='clear' onClick={signInWithProvider(new FacebookAuthProvider())}>
-          <IonIcon icon='logo-facebook' />
+          <IonIcon icon={logoFacebook} slot='icon-only'/>
         </IonButton>
       </div>
     </IonContent>

@@ -2,7 +2,7 @@ import { Id } from '../Utils';
 import * as Models from './Models';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonButtons, IonModal, IonIcon } from '@ionic/react';
 import './style.css';
-import { checkmark, close, add, remove } from 'ionicons/icons';
+import { checkmarkSharp, closeSharp, addSharp, removeSharp } from 'ionicons/icons';
 import { memo, useState } from 'react';
 
 type Props = {
@@ -46,12 +46,12 @@ export const BoughtPopup =
 
             <IonButtons slot='primary'>
               <IonButton onClick={handleOk}>
-                <IonIcon slot='icon-only' icon={checkmark} />
+                <IonIcon slot='icon-only' icon={checkmarkSharp} />
               </IonButton>
             </IonButtons>
             <IonButtons slot='secondary'>
               <IonButton onClick={onClose}>
-                <IonIcon slot='icon-only' icon={close} />
+                <IonIcon slot='icon-only' icon={closeSharp} />
               </IonButton>
             </IonButtons>
           </IonToolbar>
@@ -67,7 +67,7 @@ export const BoughtPopup =
               color='dark'
               size='large'
             >
-              <IonIcon slot='icon-only' icon={remove} />
+              <IonIcon slot='icon-only' icon={removeSharp} />
             </IonButton>
             <div className='amount'>{amount}</div>
             <IonButton
@@ -77,7 +77,7 @@ export const BoughtPopup =
               color='dark'
               size='large'
             >
-              <IonIcon slot='icon-only' icon={add} />
+              <IonIcon slot='icon-only' icon={addSharp} />
             </IonButton>
           </div>
         </IonContent>

@@ -8,6 +8,7 @@ import { useListen } from '../Firebase/Database';
 
 export const QueryHome = () => {
   const uid = useUser(true).user?.id
+
   const listen = useListen()
 
   return useMemo<Observable<Home>>(() =>

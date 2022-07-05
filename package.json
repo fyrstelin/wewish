@@ -1,6 +1,6 @@
 {
   "name": "wewish",
-  "version": "3.0.0",
+  "version": "3.0.2",
   "private": true,
   "dependencies": {
     "@ionic/core": "^6.0.15",
@@ -17,8 +17,8 @@
     "react": "^18",
     "react-color": "^2.19.3",
     "react-dom": "^18",
-    "react-router": "^6.2.1",
-    "react-router-dom": "^6.2.1",
+    "react-router": "^5.0.1",
+    "react-router-dom": "^5.0.1",
     "rxjs": "^7.5.4"
   },
   "scripts": {
@@ -32,14 +32,13 @@
   "devDependencies": {
     "@types/color": "^3.0.3",
     "@types/dateformat": "^5.0.0",
-    "@types/node": "^17.0.17",
     "@types/react": "^18",
     "@types/react-color": "^3.0.6",
     "@types/react-dom": "^18",
     "@types/react-router": "^5.1.18",
     "@types/react-router-dom": "^5.3.3",
     "firebase-bolt": "^0.8.4",
-    "firebase-tools": "^10.2.0",
+    "firebase-tools": "^11.1.0",
     "react-scripts": "^5.0.0",
     "typescript": "^4.5.5"
   },

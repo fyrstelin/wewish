@@ -1,10 +1,8 @@
-import { FC, useEffect, VFC } from 'react';
+import { FC, useEffect } from 'react';
 import * as Home from './Home';
 import { Splash } from './Splash';
 import * as Firebase from './Firebase';
-import { Route, unstable_HistoryRouter as Router, Routes, useParams } from 'react-router-dom';
 import * as Wishlist from './Wishlist';
-import history from './Utils/History';
 import * as UserSettings from './UserSettings';
 import { WishlistSettings } from './WishlistSettings';
 import { Policy } from './Legal/Policy';
@@ -16,14 +14,17 @@ import { filter } from 'rxjs/operators';
 import { Skills } from './Skills';
 import { Terms } from './Legal/Terms';
 import { About } from './Legal/About';
-import { Hash } from './Utils/Hash';
+import { HashController } from './Utils/Hash';
 import { SyncFcmTokenProcess } from './SyncFcmTokenProcess';
-import { download } from 'ionicons/icons';
+import { downloadSharp } from 'ionicons/icons';
 import { Popups } from './Controls/Popups';
 import { UserProvider } from './User/UserProvider';
 import { Observable } from 'rxjs';
+import { IonReactRouter } from '@ionic/react-router';
+import { IonRouterOutlet } from '@ionic/react';
+import { Route, useRouteMatch } from 'react-router';
 
-const ServiceWorkerMessages: VFC<{
+const ServiceWorkerMessages: FC<{
   updates: Observable<string>
 }> = ({
   updates
@@ -37,7 +38,7 @@ const ServiceWorkerMessages: VFC<{
       ).subscribe(() => toaster.next({
         message: translation['service-worker']['new-content'],
         action: {
-          icon: download,
+          icon: downloadSharp,
           onClick: () => window.location.reload()
         }
       }))
@@ -50,18 +51,18 @@ const ServiceWorkerMessages: VFC<{
 
 const Wrappers = {
   Wishlist: () => {
-    const { id, wishId } = useParams<'id' | 'wishId'>()
+    const { params: { id, wishId } } = useRouteMatch<{ id: string, wishId: string }>()
     return <Wishlist.Root
       id={id!}
       wishId={wishId}
     />
   },
   WishlistSettings: () => {
-    const { id } = useParams<'id'>()
+    const { params: { id } } = useRouteMatch<{ id: string }>()
     return <WishlistSettings id={id!} />
   },
   Invite: () => {
-    const { code } = useParams<'code'>()
+    const { params: { code } } = useRouteMatch<{ code: string }>()
     return <Invite code={code!} />
   }
 }
@@ -78,26 +79,24 @@ export const App: FC<{
         <Popups>
           <Toaster>
             <Skills>
-              <Hash>
-                <ServiceWorkerMessages updates={updates} />
-                <SyncFcmTokenProcess />
-                <Router history={history}>
+              <ServiceWorkerMessages updates={updates} />
+              <SyncFcmTokenProcess />
+              <IonReactRouter>
+                <HashController>
                   <UserProvider>
-                    <Routes>
-                      <Route path='/' element={<Home.Root />} />
-                      <Route path='/wishlists/:id/settings' element={<Wrappers.WishlistSettings />} />
-                      <Route path='/wishlists/:id' element={<Wrappers.Wishlist />} />
-                      <Route path='/wishlists/:id/:wishId' element={<Wrappers.Wishlist />} />
-                      <Route path='/user-settings' element={<UserSettings.Root />} />
-                      <Route path='/policy' element={<Policy />} />
-                      <Route path='/terms' element={<Terms />} />
-                      <Route path='/about' element={<About />} />
-                      <Route path='/invites/:code' element={<Wrappers.Invite />} />
-                      <Route path='*' element='Not found' />
-                    </Routes>
+                    <IonRouterOutlet>
+                      <Route exact path='/' component={Home.Root} />
+                      <Route exact path='/wishlists/:id/settings' component={Wrappers.WishlistSettings} />
+                      <Route exact path='/wishlists/:id' component={Wrappers.Wishlist} />
+                      <Route exact path='/user-settings' component={UserSettings.Root} />
+                      <Route exact path='/policy' component={Policy} />
+                      <Route exact path='/terms' component={Terms} />
+                      <Route exact path='/about' component={About} />
+                      <Route exact path='/invites/:code' component={Wrappers.Invite} />
+                    </IonRouterOutlet>
                   </UserProvider>
-                </Router>
-              </Hash>
+                </HashController>
+              </IonReactRouter>
             </Skills>
           </Toaster>
         </Popups>

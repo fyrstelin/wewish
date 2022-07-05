@@ -3,7 +3,6 @@ import { Skill, Teaches } from '../Skills';
 import { useTranslation } from '../Localization';
 import { Help } from '../Controls/Help';
 import { IonButton, IonIcon } from '@ionic/react';
-import { useNavigate } from 'react-router';
 
 type Props = {
   icon: string
@@ -21,22 +20,13 @@ export const SimpleMenuButton: FC<Props> = ({
   teaches
 }) => {
   const { tutorial } = useTranslation()
-  const navigate = useNavigate()
 
   return (
     <IonButton
-      onClick={e => {
-        if (onClick) {
-          onClick();
-        }
-        if (href) {
-          e.preventDefault();
-          navigate(href);
-        }
-      }}
+      onClick={onClick}
       disabled={disabled}
-      href={href}>
-      <IonIcon icon={icon} />
+      routerLink={href}>
+      <IonIcon icon={icon} slot='icon-only'/>
       {teaches && <Teaches skill={teaches}>
         <Help variant='menu-button'>{tutorial[teaches]}</Help>
       </Teaches>}

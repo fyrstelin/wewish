@@ -2,10 +2,9 @@ import { ColorResult, SwatchesPicker } from 'react-color';
 import cx from 'classnames';
 import './index.css';
 import { IonContent, IonTitle, IonButtons, IonButton, IonIcon } from '@ionic/react';
-import { Modal } from '../Modal';
-import { WithHashController } from '../../Utils/Hash';
-import { save } from 'ionicons/icons';
-import { PureComponent } from 'react';
+import { Modal, useModalController } from '../Modal';
+import { saveSharp } from 'ionicons/icons';
+import { FC } from 'react';
 
 export type Model = {
   value: string | undefined,
@@ -43,65 +42,48 @@ type Props = {
   onSave: () => Promise<void>
 };
 
-export const ColorInput =
-  WithHashController(
-    class ColorInput extends PureComponent<Props & WithHashController> {
+export const ColorInput: FC<Props> = ({ model, fallbackColor, title, id, onChange, onSave }) => {
+  const color = model.value || model.backingValue;
 
-      private open = () => this.props.hashController.set('modal', this.props.id);
-      private close = () => {
-        this.props.onChange({
-          ...this.props.model,
-          value: undefined
-        })
-      }
-      private save = async () => {
-        await this.props.onSave();
-      }
+  const [open, close] = useModalController(id)
 
-      private changeColor = (result: ColorResult) =>
-        this.props.onChange({
-          ...this.props.model,
-          value: result.hex
-        });
+  const changeColor = (result: ColorResult) =>
+    onChange({
+      ...model,
+      value: result.hex
+    });
 
-      render() {
-        const { model, fallbackColor, title, id } = this.props;
-
-        const color = model.value || model.backingValue;
-
-        return (
-          <div className='color-input'>
-            <div
-              className={cx('button', fallbackColor)}
-              onClick={this.open}
-              style={{
-                background: color
-              }}
+  return (
+    <div className='color-input'>
+      <div
+        className={cx('button', fallbackColor)}
+        onClick={() => open()}
+        style={{
+          background: color
+        }}
+      />
+      <Modal
+        id={id}
+        color={fallbackColor}
+        onDismiss={close}
+        header={<>
+          <IonTitle>{title}</IonTitle>
+          <IonButtons slot='end'>
+            <IonButton onClick={onSave} >
+              <IonIcon icon={saveSharp} />
+            </IonButton>
+          </IonButtons>
+        </>}
+      >
+        <IonContent>
+          <div className='color-input__color-picker'>
+            <SwatchesPicker
+              color={color}
+              onChange={changeColor}
             />
-            <Modal
-              id={id}
-              color={fallbackColor}
-              onDismiss={this.close}
-              header={<>
-                <IonTitle>{title}</IonTitle>
-                <IonButtons slot='end'>
-                  <IonButton onClick={this.save} >
-                    <IonIcon icon={save} />
-                  </IonButton>
-                </IonButtons>
-              </>}
-            >
-              <IonContent>
-                <div className='color-input__color-picker'>
-                  <SwatchesPicker
-                    color={color}
-                    onChange={this.changeColor}
-                  />
-                </div>
-              </IonContent>
-            </Modal>
           </div>
-        );
-      }
-    }
-  )
+        </IonContent>
+      </Modal>
+    </div>
+  );
+}

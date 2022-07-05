@@ -1,8 +1,9 @@
 import { FC } from 'react';
-import { Page } from '../Page';
-import { IonLabel, IonList, IonItem, IonListHeader } from '@ionic/react';
+import { IonLabel, IonList, IonItem, IonListHeader, IonPage, IonTitle, IonContent } from '@ionic/react';
 import { useTranslation } from '../Localization';
 import styles from './styles.module.css'
+import { Header } from '../Controls/Header';
+import { BackButton } from '../Controls/BackButton';
 
 const Section: FC<{
   title?: string
@@ -13,7 +14,7 @@ const Section: FC<{
     .map(l => l.trim())
     .filter(x => !!x)
 
-  
+
   return (
     <>
       {title && <IonListHeader color='light'>
@@ -32,16 +33,21 @@ export const Policy: FC = () => {
   const { policy: t } = useTranslation()
 
   return (
-    <Page title={`WeWish - ${t.title}`} parent='/'>
-      <IonList lines='none' className={styles.list}>
-        <IonItem>{t['revision-date']}</IonItem>
-        <Section>{t.intro}</Section>
-        <Section title={t.consent.title}>{t.consent.body}</Section>
-        <Section title={t.information.title}>{t.information.body}</Section>
-        <Section title={t.gdpr.title}>{t.gdpr.body}</Section>
-        <Section title={t.children.title}>{t.children.body}</Section>
-      </IonList>
-
-    </Page>
+    <IonPage>
+      <Header>
+        <BackButton>/about</BackButton>
+        <IonTitle>{`WeWish - ${t.title}`}</IonTitle>
+      </Header>
+      <IonContent>
+        <IonList lines='none' className={styles.list}>
+          <IonItem>{t['revision-date']}</IonItem>
+          <Section>{t.intro}</Section>
+          <Section title={t.consent.title}>{t.consent.body}</Section>
+          <Section title={t.information.title}>{t.information.body}</Section>
+          <Section title={t.gdpr.title}>{t.gdpr.body}</Section>
+          <Section title={t.children.title}>{t.children.body}</Section>
+        </IonList>
+      </IonContent>
+    </IonPage>
   );
 }

@@ -3,27 +3,26 @@ import * as Models from './Models';
 import cx from 'classnames';
 import { useUser } from '../User/UserProvider';
 import { BoughtPopup } from './BoughtPopup';
-import { IonAvatar, IonIcon, IonLabel, IonItemSliding } from '@ionic/react';
+import { IonAvatar, IonIcon, IonLabel, IonItemSliding, IonItem } from '@ionic/react';
 import { useTranslation } from '../Localization';
 import { Swipe } from '../Controls/Swipe';
 import { usePopupManager } from '../Controls/Popups';
-import { Item } from '../Controls/Item';
-import { exit, logoEuro, trash, arrowUndo, checkmark } from 'ionicons/icons';
+import { exitSharp, logoEuro, trashSharp, arrowUndoSharp, checkmarkSharp } from 'ionicons/icons';
+import { useModalController } from '../Controls/Modal';
 
 type Props = {
-  wishlistId: string
   wish: Models.Wish
-  icon: string
   onMarkAsBought: (wish: Models.Wish, amount: number) => void
   onMarkAsUnbought: (wish: Models.Wish) => void
   onDeleteWish: (wish: Models.Wish) => void
   uninteresting?: true
 }
 
-export const WishItem: FC<Props> = ({ wish, wishlistId, icon, onMarkAsBought, onMarkAsUnbought, onDeleteWish, uninteresting }) => {
+export const WishItem: FC<Props> = ({ wish, onMarkAsBought, onMarkAsUnbought, onDeleteWish, uninteresting }) => {
   const { user } = useUser()
   const translation = useTranslation()
   const popupManager = usePopupManager()
+  const [openWish] = useModalController('wish')
 
   const [popupOpen, setPopupOpen] = useState(false)
 
@@ -90,7 +89,7 @@ export const WishItem: FC<Props> = ({ wish, wishlistId, icon, onMarkAsBought, on
         />
       }
       <IonItemSliding ref={slidingItem} disabled={uninteresting}>
-        <Item class='wish-item' href={`/wishlists/${wishlistId}/${wish.id}`}>
+        <IonItem class='wish-item' onClick={() => openWish({ wish: wish.id })}>
           <IonAvatar slot='start'>
             {wish.thumbnailUrl
               ? <img src={wish.thumbnailUrl} alt={wish.name} />
@@ -103,7 +102,7 @@ export const WishItem: FC<Props> = ({ wish, wishlistId, icon, onMarkAsBought, on
               {url
                 ? <a href={url} target='_blank' rel="noopener noreferrer">
                   {amount} {name}
-                  <IonIcon icon={exit} />
+                  <IonIcon icon={exitSharp} />
                 </a>
                 : <>{amount} {name}</>
               }
@@ -130,12 +129,12 @@ export const WishItem: FC<Props> = ({ wish, wishlistId, icon, onMarkAsBought, on
               </>
             }
           </div>
-        </Item>
+        </IonItem>
         <Swipe
           icon={
             wish.$type === 'owned-wish'
-              ? trash
-              : bought ? arrowUndo : checkmark}
+              ? trashSharp
+              : bought ? arrowUndoSharp : checkmarkSharp}
           color={bought || wish.$type === 'owned-wish' ? 'danger' : 'success'}
           onSwipe={swipe}
         />

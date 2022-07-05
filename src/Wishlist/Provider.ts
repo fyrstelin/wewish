@@ -74,14 +74,17 @@ export const QueryWishlist = (wishlistId: string): Observable<Wishlist> => {
       }))
 
     const accessRequests = new Observable<string[]>(s => {
-      const q = query(ref(database),
+      const q = query(ref(database, '/requests'),
         orderByChild('wishlistId'),
         equalTo(wishlistId)
       )
       s.next([])
       return onValue(q, snapshot => {
         const res = snapshot.val() as Dictionary<Api.AccessRequest>;
-        s.next(Object.values(res || {}).map(x => x.requester));
+        const userIds = [] as string[]
+
+        new Set<string>(Object.values(res || {}).map(x => x.requester)).forEach(id => userIds.push(id))
+        s.next(userIds)
       })
     }
     ).pipe(
