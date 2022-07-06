@@ -5,12 +5,13 @@ import { useUser } from "../User/UserProvider";
 import { from, Observable } from "rxjs";
 import * as Api from '../Api';
 import { useListen } from "../Firebase/Database";
+import { useMemo } from 'react';
 
 export const QueryUser = (): Observable<Models.User> => {
   const listen = useListen()
 	const { getUser } = useUser(true)
 
-	return from(getUser()).pipe(
+	return useMemo(() => from(getUser()).pipe(
 		switchMap(({ id, email, providers }) => listen<Api.User>(`users/${id}`)
 			.pipe(
 				map(user => user || {}),
@@ -26,5 +27,5 @@ export const QueryUser = (): Observable<Models.User> => {
 					};
 				})
 			)),
-	)
+	), [getUser, listen])
 }
