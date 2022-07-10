@@ -9,14 +9,14 @@ import * as Api from '../Api';
 import { useListen, useDatabase } from '../Firebase/Database';
 import { equalTo, onValue, orderByChild, query, ref } from 'firebase/database';
 
-export const QueryWishlist = (wishlistId: string): Observable<Wishlist> => {
+export const QueryWishlist = (id: WishlistId): Observable<Wishlist> => {
   const listen = useListen()
   const uid = useUser().user?.id
   const database = useDatabase()
 
   return useMemo(() => {
     const field = <T>(path: string, defaultTo?: T) =>
-      listen<T>(`/wishlists/${wishlistId}/${path}`).pipe(
+      listen<T>(`/wishlists/${id}/${path}`).pipe(
         defaultTo === undefined
           ? stream => stream
           : map(x => x ?? defaultTo)
@@ -25,7 +25,7 @@ export const QueryWishlist = (wishlistId: string): Observable<Wishlist> => {
     const access = field<Api.Access>('access', 'public')
 
     const $type = uid
-      ? listen<Api.Member>(`/wishlists/${wishlistId}/members/${uid}`).pipe(
+      ? listen<Api.Member>(`/wishlists/${id}/members/${uid}`).pipe(
         switchMap(member => member
           ? of(member === 'owner'
             ? 'owned' as 'owned'
@@ -46,7 +46,7 @@ export const QueryWishlist = (wishlistId: string): Observable<Wishlist> => {
           const res = (snapshot.val()) as Dictionary<Api.AccessRequest>;
 
           stream.next(Object.values(res || {})
-            .some(x => x.wishlistId === wishlistId))
+            .some(x => x.wishlistId === id))
           stream.next(res && Object.keys(res).length > 0);
         });
       })
@@ -76,7 +76,7 @@ export const QueryWishlist = (wishlistId: string): Observable<Wishlist> => {
     const accessRequests = new Observable<string[]>(s => {
       const q = query(ref(database, '/requests'),
         orderByChild('wishlistId'),
-        equalTo(wishlistId)
+        equalTo(id)
       )
       s.next([])
       return onValue(q, snapshot => {
@@ -152,7 +152,7 @@ export const QueryWishlist = (wishlistId: string): Observable<Wishlist> => {
     )
 
     const stared = uid
-      ? listen<boolean>(`/users/${uid}/wishlists/${wishlistId}`).pipe(
+      ? listen<boolean>(`/users/${uid}/wishlists/${id}`).pipe(
         map(x => x === true)
       )
       : of(false)
@@ -166,20 +166,20 @@ export const QueryWishlist = (wishlistId: string): Observable<Wishlist> => {
           case 'draft':
             return title.pipe(
               map(title => ({
-                id: wishlistId,
+                id: id,
                 $type, title
               }))
             )
           case 'private':
             return combineLatest(title, accessRequested,
               (title, accessRequested) => ({
-                id: wishlistId,
+                id: id,
                 $type, title, accessRequested
               }));
           case 'public':
             return combineLatest(base, publicWishes, stared,
               (base, wishes, stared) => ({
-                id: wishlistId,
+                id: id,
                 $type,
                 wishes,
                 stared,
@@ -190,7 +190,7 @@ export const QueryWishlist = (wishlistId: string): Observable<Wishlist> => {
             return combineLatest(
               base, access, ownedWishes, accessRequests,
               (base, access, wishes, accessRequests) => ({
-                id: wishlistId,
+                id: id,
                 $type,
                 access,
                 wishes,
@@ -203,5 +203,5 @@ export const QueryWishlist = (wishlistId: string): Observable<Wishlist> => {
     )
 
     return res
-  }, [wishlistId, listen, database, uid])
+  }, [id, listen, database, uid])
 }

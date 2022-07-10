@@ -158,7 +158,6 @@ export const Wishlist: FC<Props> = ({
           }
         </div>
         <Wishes
-          wishlistId={wishlist.id}
           wishes={wishlist.wishes}
           onMarkAsBought={markAsBought}
           onMarkAsUnbought={markAsUnbought}

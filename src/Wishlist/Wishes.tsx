@@ -5,14 +5,13 @@ import { IonList } from '@ionic/react';
 import { FC } from 'react';
 
 type Props = {
-  wishlistId: string
   wishes: ReadonlyArray<Models.Wish>
   onMarkAsBought: (wish: Models.Wish, amount: number) => void
   onMarkAsUnbought: (wish: Models.Wish) => void
   onDeleteWish: (wish: Models.Wish) => void
 }
 
-export const Wishes: FC<Props> = ({ wishes, onMarkAsBought, onMarkAsUnbought, onDeleteWish, wishlistId }) => {
+export const Wishes: FC<Props> = ({ wishes, onMarkAsBought, onMarkAsUnbought, onDeleteWish }) => {
   const { user } = useUser()
   const grouped = wishes.reduce((group, wish) => {
     const category = (wish.category || '').toLocaleUpperCase().trim();
@@ -30,7 +29,6 @@ export const Wishes: FC<Props> = ({ wishes, onMarkAsBought, onMarkAsUnbought, on
     <IonList>
       {categories.map(category => <WishGroup
         key={category}
-        wishlistId={wishlistId}
         userId={user ? user.id : ''}
         category={category}
         wishes={grouped[category]}

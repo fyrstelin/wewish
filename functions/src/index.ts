@@ -41,7 +41,7 @@ const db = app.database();
 const bucket = app.storage().bucket();
 
 const unlink = (p: string) =>
-  new Promise((r, q) => fs.unlink(p, err => {
+  new Promise<void>((r, q) => fs.unlink(p, err => {
     if (err) {
       q();
     } else {

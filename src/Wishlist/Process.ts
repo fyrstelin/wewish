@@ -6,7 +6,7 @@ import { WithDatabase } from '../Firebase/Database'
 import { ref, runTransaction } from "firebase/database";
 
 type Props = {
-  wishlistId: string
+  wishlistId: WishlistId
 }
 
 export const Process =

@@ -51,10 +51,9 @@ const ServiceWorkerMessages: FC<{
 
 const Wrappers = {
   Wishlist: () => {
-    const { params: { id, wishId } } = useRouteMatch<{ id: string, wishId: string }>()
+    const { params: { id } } = useRouteMatch<{ id: string }>()
     return <Wishlist.Root
-      id={id!}
-      wishId={wishId}
+      id={id}
     />
   },
   WishlistSettings: () => {

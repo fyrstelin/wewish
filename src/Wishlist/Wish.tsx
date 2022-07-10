@@ -1,4 +1,4 @@
-import { FC, useState, useEffect, VFC, PropsWithChildren } from 'react';
+import { FC, useState, useEffect, PropsWithChildren } from 'react';
 import * as Models from './Models';
 import { IonTitle, IonButtons, IonButton, IonIcon, IonList, IonItem, IonLabel, IonInput, IonCheckbox } from '@ionic/react';
 import { useTranslation } from '../Localization';
@@ -59,7 +59,7 @@ const Item: FC<PropsWithChildren<{ label: string }>> = ({ children, label }) => 
   </IonItem>
   : <></>
 
-const AmountSelector: VFC<{
+const AmountSelector: FC<{
   max: number
   amount: number
   onChange: (amount: number) => void
@@ -118,13 +118,13 @@ export const Wish: FC<Props> = ({ wish, onClose, isOwner, onUploadImage, onDelet
   }, [isOwner, wish])
 
 
-  const uid = user?.id ?? ''
+  const uid = user?.id
 
   const isDirty = state && ([state.name, state.category, state.url, state.description].some(StringInput.IsDirty) ||
     Price.IsDirty(state.price) ||
     Amount.IsDirty(state.amount));
 
-  const bought = (wish && wish.$type === 'public-wish' && wish.buyers[uid]) || 0;
+  const bought = (uid && (wish && wish.$type === 'public-wish' && wish.buyers[uid])) || 0;
 
   const boughtByOthers = wish && wish.$type === 'public-wish'
     ? Object

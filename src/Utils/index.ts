@@ -1,11 +1,6 @@
-const chars = '23456789abcdefghjkmnpqrstuvwxyz';
-export const Id = (length = 8) => {
-    let res = '';
-    for (let i = 0; i < length; i++) {
-        res += chars[Math.floor(Math.random() * chars.length)];
-    }
-    return res;
-} 
+import { urlAlphabet, customAlphabet } from "nanoid";
+
+export const Id: <TId extends Id<any> = Id<any>>(length?: number) => TId = customAlphabet(urlAlphabet, 8) as any
 
 export const Patch = (patcher: { [path: string]: any}) => Object.keys(patcher)
     .reduce((patch, path) => {

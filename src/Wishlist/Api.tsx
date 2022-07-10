@@ -16,70 +16,50 @@ export type WishUpdate = {
 export type Api = {
   addWish: (name: string, category: null | string, amount: number | 'unlimited') => Promise<void>
   addWishFromUrl: (url: string, category: null | string) => Promise<void>
-  deleteWish: (wishId: string) => Promise<void>
-  updateWish: (wishId: string, wish: WishUpdate) => Promise<void>
+  deleteWish: (wishId: WishId) => Promise<void>
+  updateWish: (wishId: WishId, wish: WishUpdate) => Promise<void>
 
-  uploadImage: (wishId: string, image: Blob) => Promise<void>
+  uploadImage: (wishId: WishId, image: Blob) => Promise<void>
 
   star: () => Promise<void>
   unstar: () => Promise<void>
 
-  markAsBought: (wishId: string, amount: number) => Promise<void>
-  markAsUnbought: (wishId: string) => Promise<void>
+  markAsBought: (wishId: WishId, amount: number) => Promise<void>
+  markAsUnbought: (wishId: WishId) => Promise<void>
 
   shared: () => Promise<void>
 
   updateDescription: (description: string) => Promise<void>
 
   requestAccess: () => Promise<void>
-  acceptAccessRequest: (id: string) => Promise<void>
-  rejectAccessRequest: (id: string) => Promise<void>
+  acceptAccessRequest: (id: UserId) => Promise<void>
+  rejectAccessRequest: (id: UserId) => Promise<void>
 }
 
+const log = (name: string) => (...args: any) => console.log(name, ...args) as any
+
 const EmptyApi: Api = {
-  addWish: async (name: string, category: null | string, amount: number | 'unlimited') =>
-    console.log('add wish', name, category, amount),
-  addWishFromUrl: async (url: string, category: null | string) =>
-    console.log('addWishFromUrl', url, category),
-
-  deleteWish: async (wishId: string) =>
-    console.log('delete wish', wishId),
-  updateWish: async (wishId: string, update: WishUpdate) =>
-    console.log('updateWish', wishId, update),
-
-  uploadImage: async (wishId: string, image: Blob) =>
-    console.log('upload image', wishId, image),
-
-  star: async () =>
-    console.log('star'),
-  unstar: async () =>
-    console.log('unstar'),
-
-  markAsBought: async (wishId: string, amount: number) =>
-    console.log('markAsBought', wishId, amount),
-  markAsUnbought: async (wishId: string) =>
-    console.log('markAsUnbought', wishId),
-
-  shared: async () =>
-    console.log('shared'),
-
-  updateDescription: async (description: string) =>
-    console.log('updateDescription', description),
-
-  requestAccess: async () =>
-    console.log('requestAccess'),
-
-  acceptAccessRequest: async (uid: string) =>
-    console.log('acceptAccessRequest', uid),
-  rejectAccessRequest: async (uid: string) =>
-    console.log('rejectAccessRequest', uid)
+  addWish: log('add wish'),
+  addWishFromUrl: log('addWishFromUrl'),
+  deleteWish: log('delete wish'),
+  updateWish: log('updateWish'),
+  uploadImage: log('upload image'),
+  star: log('star'),
+  unstar: log('unstar'),
+  markAsBought: log('markAsBought'),
+  markAsUnbought: log('markAsUnbought'),
+  shared: log('shared'),
+  updateDescription: log('updateDescription'),
+  requestAccess: log('requestAccess'),
+  acceptAccessRequest: log('acceptAccessRequest'),
+  rejectAccessRequest: log('rejectAccessRequest')
 }
 
 const Context = createContext<Api>(EmptyApi);
 
 export const useApi = () => useContext(Context)
 
-export const ApiProvider: FC<PropsWithChildren<{ wishlistId: string }>> = ({
+export const ApiProvider: FC<PropsWithChildren<{ wishlistId: WishlistId }>> = ({
   wishlistId,
   children
 }) => {
@@ -109,9 +89,9 @@ export const ApiProvider: FC<PropsWithChildren<{ wishlistId: string }>> = ({
     }
 
     return ({
-      addWish: async (name: string, category: null | string, amount: number | 'unlimited') => {
+      addWish: async (name, category, amount) => {
         const userId = auth.currentUser!.uid;
-        const wishId = Id();
+        const wishId = Id<WishId>();
         await update(ref(db), {
           [`wishlists/${wishlistId}/wishes/${wishId}`]: true,
           [`wishes/${wishId}`]: {
@@ -122,20 +102,20 @@ export const ApiProvider: FC<PropsWithChildren<{ wishlistId: string }>> = ({
         });
       },
 
-      addWishFromUrl: async (url: string, category: null | string) => {
+      addWishFromUrl: async (url, category) => {
         await addWishFn({
           url, category,
           wishlistId
         });
       },
 
-      deleteWish: async (wishId: string) => {
+      deleteWish: async (wishId) => {
         await update(ref(db), {
           [`/wishlists/${wishlistId}/wishes/${wishId}`]: null
         });
       },
 
-      updateWish: async (wishId: string, input: WishUpdate) => {
+      updateWish: async (wishId, input) => {
         await update(ref(db), Patch({
           [`wishes/${wishId}/name`]: input.name,
           [`wishes/${wishId}/category`]: input.category,
@@ -146,7 +126,7 @@ export const ApiProvider: FC<PropsWithChildren<{ wishlistId: string }>> = ({
         }));
       },
 
-      uploadImage: async (wishId: string, image: Blob) => {
+      uploadImage: async (wishId, image) => {
         const imageRef = ref(db);
         const currentImage = (await get(imageRef)).val();
         const path = `/uploads/${Id(32)}`;
@@ -184,7 +164,7 @@ export const ApiProvider: FC<PropsWithChildren<{ wishlistId: string }>> = ({
         });
       },
 
-      markAsBought: async (wishId: string, amount: number) => {
+      markAsBought: async (wishId, amount) => {
         const userId = auth.currentUser!.uid;
         update(ref(db), {
           [`/users/${userId}/skills/mark-as-bought`]: true,
@@ -192,7 +172,7 @@ export const ApiProvider: FC<PropsWithChildren<{ wishlistId: string }>> = ({
         });
       },
 
-      markAsUnbought: async (wishId: string) => {
+      markAsUnbought: async (wishId) => {
         const userId = auth.currentUser!.uid;
         update(ref(db), {
           [`/bought-wishes/${wishId}/${userId}`]: null
@@ -206,14 +186,14 @@ export const ApiProvider: FC<PropsWithChildren<{ wishlistId: string }>> = ({
         });
       },
 
-      updateDescription: async (description: string) => {
+      updateDescription: async (description) => {
         update(ref(db), {
           [`/wishlists/${wishlistId}/description`]: description
         })
       },
 
       requestAccess: async () => {
-        const id = Id();
+        const id = Id<AccessRequestId>();
         update(ref(db), {
           [`requests/${id}`]: {
             requester: auth.currentUser!.uid,
@@ -223,12 +203,12 @@ export const ApiProvider: FC<PropsWithChildren<{ wishlistId: string }>> = ({
       },
 
 
-      acceptAccessRequest: (uid: string) =>
+      acceptAccessRequest: uid =>
         handleAccessRequest({
           [`/wishlists/${wishlistId}/members/${uid}`]: 'guest',
         }, uid),
 
-      rejectAccessRequest: (uid: string) => handleAccessRequest({}, uid)
+      rejectAccessRequest: uid => handleAccessRequest({}, uid)
     })
   }, [addWishFn, auth.currentUser, db, storage, wishlistId])
 

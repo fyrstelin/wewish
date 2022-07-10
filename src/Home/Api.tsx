@@ -25,7 +25,7 @@ export const Api: FC<PropsWithChildren> = ({ children }) => {
     signout: async () => auth.signOut(),
 
     addWishlist: async (title: string) => {
-      const id = Id();
+      const id = Id<WishlistId>();
       const userId = auth.currentUser!.uid;
       const values = {
         [`users/${userId}/wishlists/${id}`]: true,

@@ -5,10 +5,9 @@ import { IonItemGroup, IonItemDivider, IonLabel, IonButton, IonIcon } from '@ion
 import { addSharp, removeSharp } from 'ionicons/icons';
 
 type Props = {
-  wishlistId: string
   category: string
   wishes: ReadonlyArray<Models.Wish>
-  userId: string
+  userId: UserId
   onMarkAsBought: (wish: Models.Wish, amount: number) => void
   onMarkAsUnbought: (wish: Models.Wish) => void
   onDeleteWish: (wish: Models.Wish) => void
@@ -21,7 +20,7 @@ const icons = {
   interesting: addSharp
 };
 
-export const WishGroup = ({ category, wishes, onMarkAsBought, onMarkAsUnbought, userId, onDeleteWish, wishlistId }: Props) => {
+export const WishGroup = ({ category, wishes, onMarkAsBought, onMarkAsUnbought, userId, onDeleteWish }: Props) => {
   const [state, setState] = useState<State>('interesting')
 
   const interestingWishes = wishes

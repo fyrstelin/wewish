@@ -4,7 +4,7 @@ import * as Models from './Models';
 
 type Props = {
   title: string
-  owners: ReadonlyArray<string>
+  owners: ReadonlyArray<UserId>
   wishes: ReadonlyArray<Models.Wish>
   description: string | undefined
 };

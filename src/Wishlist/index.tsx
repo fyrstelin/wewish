@@ -10,7 +10,7 @@ import { HeaderButtons } from "./HeaderButtons";
 import { AddWish } from "./AddWish";
 import { BackButton } from "../Controls/BackButton";
 
-type Props = { id: string, wishId?: string };
+type Props = { id: WishlistId };
 export const Root = ({ id }: Props) => {
   const wishlist = useStream(QueryWishlist(id))
 

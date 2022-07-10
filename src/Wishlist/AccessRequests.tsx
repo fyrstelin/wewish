@@ -6,8 +6,8 @@ import { FC } from 'react';
 import { Modal } from '../Controls/Modal';
 
 type Props = {
-  onAccept: (uid: string) => Promise<void>
-  onReject: (uid: string) => Promise<void>
+  onAccept: (id: AccessRequestId) => Promise<void>
+  onReject: (id: AccessRequestId) => Promise<void>
   accessRequests: ReadonlyArray<Models.AccessRequest>
 }
 
