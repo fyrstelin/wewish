@@ -127,7 +127,7 @@ export const ApiProvider: FC<PropsWithChildren<{ wishlistId: WishlistId }>> = ({
       },
 
       uploadImage: async (wishId, image) => {
-        const imageRef = ref(db);
+        const imageRef = ref(db, `/wishes/${wishId}/image`);
         const currentImage = (await get(imageRef)).val();
         const path = `/uploads/${Id(32)}`;
         const r = storageRef(storage, path);

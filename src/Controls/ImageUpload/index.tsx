@@ -29,7 +29,6 @@ export class ImageUpload extends PureComponent<Props, State> {
         </IonFab>
         <input
           type='file'
-          capture
           accept='image/jpeg'
           onChange={this.uploadFile}
           ref={this.mountInput}

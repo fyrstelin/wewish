@@ -1,6 +1,6 @@
 {
   "name": "wewish",
-  "version": "3.0.3",
+  "version": "3.0.5",
   "private": true,
   "dependencies": {
     "@ionic/core": "^6.0.15",
